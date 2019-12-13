@@ -42,7 +42,7 @@ from SetUpInitialConditions import initial_conditions
 from ModelParameter import model_parameters
 from SolveForT import solve_for_T, solve_for_grad_T
 from StoreResults import store_results, set_up_matrixes
-from VisualizeResults_P1L0 import visualize_results
+from VisualizeResults import visualize_results
 from SolveForC import solve_for_c 
 from RetrievePHI_I import solve_for_phi_i
 from phi_i_from_rho_eff import fractions

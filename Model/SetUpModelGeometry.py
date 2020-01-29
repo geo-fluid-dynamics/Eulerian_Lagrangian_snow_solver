@@ -31,6 +31,13 @@ def set_up_model_geometry(SetVel, geom=1):
         nc = 50
         nz = nc +1  # number of nodes
         coord = np.linspace(0,Z_ini,nz)
+    elif geom == 4: #experiment (8) in Wiese and Schneebeli 2017
+        Z = 0.029 # m
+        Z_ini = 0.029
+        nc = 58
+        nz = nc +1  # number of nodes
+        coord = np.linspace(0,Z_ini,nz)
+
     else:
         print ('Requested geometry not available')
 

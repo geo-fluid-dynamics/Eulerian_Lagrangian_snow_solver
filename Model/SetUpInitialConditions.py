@@ -144,7 +144,7 @@ def initial_conditions(nz,Z, RHO, TT):
             rho_eff = np.ones(nz)
             rho_eff[0:x1] = 917  # lower 0.01 m ice
             rho_eff[x1:x2] = 244 # central 0.017 m snow
-            rho_eff[x2:-1] = 917 # upper 0.002 m ice
+            rho_eff[x2:] = 917 # upper 0.002 m ice
             return rho_eff
                           
     else :

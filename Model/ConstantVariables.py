@@ -1,5 +1,4 @@
-#%% constant values for the computation provided by Calonne(2014a)
-
+## constant values for the computation provided by Calonne(2014a)
 rho_i = 917 #kg/m^3 
 rho_a = 1.335 # dry air density 
 L_Cal =  2.6e9 # J/m^3

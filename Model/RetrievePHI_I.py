@@ -27,14 +27,14 @@ from ConstantVariables import rho_i
 import numpy as np
 from v_i import settling_vel
 
-def solve_for_phi_i(T, c, dt, nz, phi_i, v_dz, coord, SetVel):
+def solve_for_phi_i(T, c, dt, nz, phi_i, v_dz, coord, SetVel , t_passed, sigma):
     phi_i_new = np.zeros(nz)
     dz = np.zeros(nz)     
     phi_i_new = phi_i + dt *(c/rho_i  - v_dz * phi_i)  # compute ice volume fraction 
 
     if np.max(phi_i) > 1:
         print ('Ice volume fraction higher than 1')
-    (v_i, v_dz_new, sigma) = settling_vel(T, nz, coord, phi_i_new, SetVel)
+    (v_i, v_dz_new, sigma) = settling_vel(T, nz, coord, phi_i_new, SetVel , t_passed, sigma)
     coord_new = coord + dt * v_i                     
     dz = coord_new[1:] - coord_new[:-1]
     Z = coord_new[-1]

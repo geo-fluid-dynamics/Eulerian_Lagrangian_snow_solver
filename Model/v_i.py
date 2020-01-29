@@ -35,8 +35,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i
 
-def settling_vel(T,nz,coord,phi_i,SetVel, plot='N'):
-    
+def settling_vel(T,nz,coord,phi_i,SetVel,t_passed, sigma, plot='N'):
+    sigma_prev = sigma
+    sigma_prev[-1] = sigma_prev[-2]
     if SetVel == 'N':
         v = np.zeros(nz)
         v_dz = np.zeros(nz)
@@ -54,11 +55,17 @@ def settling_vel(T,nz,coord,phi_i,SetVel, plot='N'):
        # eta = eta_0 * rho_i * phi_i/c_eta * np.exp(a_eta *(T_fus - T) + b_eta * rho_i * phi_i)
        
 ###### Constant viscosity     
-        etatest1= eta_0 * rho_i * 0.16/c_eta * np.exp(a_eta *(T_fus - 263)+ b_eta *rho_i * 0.16) 
+        if t_passed == 0:
+            etatest1 = eta_0 * rho_i * 0.16/c_eta * np.exp(a_eta *(T_fus - 263)+ b_eta *rho_i * 0.16) 
+###### Viscosity accoring to Wiese and Schneebeli
+        else: 
+            lower = 0.0061 * 0.22 * t_passed **(0.22 - 1)
+            etatest1 = sigma_prev/lower
 ##############
         D[1:] = coord[1:]-coord[:-1] 
         D[0] = D[1] # lowest node does not have any layer
-        sigma_Dz =  g * phi_i * rho_i * D
+        sigma_Dz =  g * phi_i * rho_i * D 
+        sigma_Dz[0] = sigma_Dz[0] +1736
         sigmacum = np.cumsum(sigma_Dz) # Integral from bottom to top over vertical stresses
         sigma0 = np.ones(nz) * sigmacum[-1]
         sigma = sigma0 - sigmacum # Stress from the overlaying layers

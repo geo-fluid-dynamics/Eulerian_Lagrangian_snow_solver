@@ -63,10 +63,9 @@ def main_snow_model(geom = 1, RHO = 1, TT = 3, SWVD = 'Loewe', SetVel = 'Y'):
     [all_D_eff, all_k_eff, all_SC, all_rhoC_eff, all_rho_T, all_T,all_c, all_phi_i,all_grad_T,all_rho_eff,all_coord, all_v_i, all_sigma, all_t_passed,all_dz] = set_up_matrixes(iter_max, nz)
     SC = np.zeros(nz)
     c = np.zeros(nz)
-    [D_eff, k_eff, rhoC_eff, rho_T, rho_dT] = model_parameters(phi_i, T, Z, nz, coord,SWVD)
+    [D_eff, k_eff, rhoC_eff, rho_T, rho_dT] = model_parameters(phi_i, T, Z, nz, coord, SWVD)
     [v_i, v_dz, sigma] = settling_vel(T,nz,coord,phi_i,SetVel)
     for t in range(iter_max):
-              
         print(t)
         grad_T = solve_for_grad_T(T, dz, nz)
         [all_D_eff, all_k_eff, all_SC, all_rhoC_eff, all_rho_T, all_T,all_c,all_phi_i, all_grad_T, all_rho_eff, all_coord, all_v_i, all_sigma, all_t_passed,  all_dz] \
@@ -79,11 +78,9 @@ def main_snow_model(geom = 1, RHO = 1, TT = 3, SWVD = 'Loewe', SetVel = 'Y'):
         t_passed = t_total(t_passed,dt)
         [dt, SC] = comp_dt(t_passed,dz, a,b)
 
-        # if t %1000 == 0:
-        #     plt.imshow(all_T)
-        #     plt.show()
+        plt.imshow(all_T)
+        plt.pause(0.005)
 
-        
 ### Visualize results
     visualize_results(all_T, all_c, all_phi_i, all_grad_T, all_rho_eff, all_SC, all_coord, all_v_i, all_sigma, iter_max, nz, Z, dt, all_dz,all_t_passed,  plot=True)
 

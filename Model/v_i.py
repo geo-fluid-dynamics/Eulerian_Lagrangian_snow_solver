@@ -71,12 +71,18 @@ def settling_vel(T,nz,coord,phi_i,SetVel, plot='N'):
 ###### Temperature contolled viscosity
        # eta = eta_0 * rho_i * phi_i/c_eta * np.exp(a_eta *(T_fus - T) + b_eta * rho_i * phi_i)
        
-###### Constant viscosity     
-        etatest1= eta_0 * rho_i * 0.16/c_eta * np.exp(a_eta *(T_fus - 263)+ b_eta *rho_i * 0.16) 
+# ###### Constant viscosity     
+#         if t_passed == 0
+        etatest1 = eta_0 * rho_i * 0.16/c_eta * np.exp(a_eta *(T_fus - 263)+ b_eta *rho_i * 0.16) 
+# ###### Viscosity accoring to Wiese and Schneebeli
+#         else: 
+#             lower = 0.0061 * 0.22 * t_passed **(0.22 - 1)
+#             etatest1 = sigma_prev/lower
 ##############
         D[1:] = coord[1:]-coord[:-1] 
         D[0] = D[1] # lowest node does not have any layer
-        sigma_Dz =  g * phi_i * rho_i * D
+        sigma_Dz =  g * phi_i * rho_i * D 
+        sigma_Dz[0] = sigma_Dz[0] +1736
         sigmacum = np.cumsum(sigma_Dz) # Integral from bottom to top over vertical stresses
         sigma0 = np.ones(nz) * sigmacum[-1]
         sigma = sigma0 - sigmacum # Stress from the overlaying layers

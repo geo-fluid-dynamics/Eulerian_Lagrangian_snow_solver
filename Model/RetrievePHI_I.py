@@ -3,7 +3,7 @@ import numpy as np
 from v_i import settling_vel
 
 def solve_for_phi_i(T, c, dt, nz, phi_i, v_dz, coord, SetVel):
-    """
+    '''
     Update for ice volume fraction phi_i and depth coordinates
     For case with settling velocity (SetVel = 'Y') and without settling velocity (SetVel ='N')
     Workflow:
@@ -26,7 +26,7 @@ def solve_for_phi_i(T, c, dt, nz, phi_i, v_dz, coord, SetVel):
     coord      z-coordinates [m]
     coord_new  updated z-coordinates [m]
     dz         node distances, distances between coordinates [m]
-    """
+    '''
     phi_i_new = np.zeros(nz)
     dz = np.zeros(nz)     
     phi_i_new = phi_i + dt *(c/rho_i  - v_dz * phi_i)  # compute ice volume fraction 

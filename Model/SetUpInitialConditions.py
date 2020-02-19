@@ -6,8 +6,8 @@ RHO=1 Homogeneous
 RHO=2 Ice crust like propose in Hansen
 RHO=3 Gaussian distribution
 RHO=4 Linear profile
-
 RHO=5 2Layer profile
+RHO=6 Homogeneous - like in Wiese and Schneebeli (2017) 
 
 
 _______________________________________________
@@ -17,6 +17,7 @@ TT=2 273 initial temperature
 TT=3 263 initial temperature
 TT=4 253 initial temperature
 TT=5 264 initial temperature
+TT=5 264 initial temperature - like in Wiese and Schneebeli (2017)
 """
 import numpy as np
 def initial_conditions(nz,Z, RHO, TT):
@@ -45,6 +46,11 @@ def initial_conditions(nz,Z, RHO, TT):
         def T_ini(nz,Z):
             T = np.ones(nz)
             T_ini=253
+            T= T* T_ini
+    elif TT == 5:
+        def T_ini(nz,Z):
+            T = np.ones(nz)
+            T_ini= 265.5
             T= T* T_ini
 
             return T
@@ -133,6 +139,15 @@ def initial_conditions(nz,Z, RHO, TT):
                 rho_eff[i]= 200 
                 
             rho_eff[nz1:nz2] = 300
+            return rho_eff
+    elif RHO ==6: # homogeneous case Experiment (8) from Wiese and Schneebeli (2017)
+        def rho_eff(nz,Z):
+            x1 = np.int(0.34 * nz )
+            x2 = np.int(0.92 * nz)
+            rho_eff = np.ones(nz)
+            rho_eff[0:x1] = 917  # lower 0.01 m ice
+            rho_eff[x1:x2] = 244 # central 0.017 m snow
+            rho_eff[x2:] = 917 # upper 0.002 m ice
             return rho_eff
                           
     else :

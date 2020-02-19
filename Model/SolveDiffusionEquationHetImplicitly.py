@@ -1,48 +1,53 @@
 """
-Solves 1D diffusion equation for heterogeneous media with implicit method 
 
-Equation of the form
-a * dT/dt = nabla (beta(x) nabla T) + velterm + FD_error
---> A T_k^{n+1} = B T_k^n  + C ((phi_i * v_i)_k^n) + E T_k^n -> to solve 
-===============  ============================================================================
-Name             Description
 ===============  ============================================================================
 
-a                vectros contains node specific variable a= (rhoC_eff+L*(1-phi_i)*rho_dT) space independent
-beta             vectros contains node specific variable beta = k_eff + D_eff*L*rho_dT space dependent
-dt               time step of the current iteration
-dz               vector contains node distances
-D                vector constains factors for node specific space and time discretization
-Dl               D *0.5 
-A                matrix containing betas and a
-    main_A       diagonal of A    
-    lower_A      lower diagonal A
-    upper_A      upper diagnal A
-u                vector containing values of previous iteration/ later variable with updated values
-b                vector initially contains values of previous iteration, then FD_error and velterm are subtracted
-B                matrix containing only a
-FD_error         term accounting for error due to non-uniform grid 
-factor_dz        vector contains factors for node distances
-beta_left        
-beta_right
-E                matrix accounting for Gird-Error-Term       
-    main_E       main diagonal of E
-    lower_E      lower diagnal of E
-    upper_E      upper diagonal of E
-C                matrix accounting for incorporation of settling velocity   
-    main_C       diagonal of C    
-    lower_C      lower diagonal C
-    upper_C      upper diagnal C
-vphi             product of phi_i and v 
-vphi_dz          derivative w.r.t. z of vphi
-velterm          vector containg final deviation due to incorporation of settling velocity
-r                vector containing factors based on node distance, water vapor saturation density and latent heat of sublimation
 """
 from BoundaryCondition import boundary_condition
 import numpy as np
 from ConstantVariables import L
+def solve_diff_het_implicit(u, rho_T,rho_dT, k_eff, D_eff, rhoC_eff, phi_i, v_i, nz, dt, dz):
+     '''
+     Solves simplified version of Equation 73 from Hansen with backward Euler
+    (rhoC_eff+(1-phi_i)*rho_dT * L)* dT/dt = (L* D_eff* rho_dT + k-eff)* d^2T/dz^2
+     Solves 1D diffusion equation for heterogeneous media with implicit method 
 
-def solve_diff_het_implicit(u, rho_T,rho_dT, k_eff, D_eff, rhoC_eff, phi_i, dt, dz,v_i, nz):
+     Equation of the form : a * dT/dt = nabla (beta(x) nabla T) + velterm + FD_error
+     in matrix form :       A T_k^{n+1} = B T_k^n  + C ((phi_i * v_i)_k^n) + E T_k^n -> to solve 
+
+     Arguments
+     -------------    ------------
+
+     a                vector contains node specific variable a= (rhoC_eff+L*(1-phi_i)*rho_dT) space independent
+     beta             vector contains node specific variable beta = k_eff + D_eff*L*rho_dT space dependent
+     dt               time step of the current iteration
+     dz               vector contains node distances
+     D                vector constains factors for node specific space and time discretization
+     Dl               D *0.5 
+     A                matrix containing betas and a
+     main_A       diagonal of A    
+     lower_A      lower diagonal A
+     upper_A      upper diagnal A
+     u                vector containing values of previous iteration/ later variable with updated values
+     b                vector initially contains values of previous iteration, then FD_error and velterm are subtracted
+     B                matrix containing only a
+     FD_error         term accounting for error due to non-uniform grid 
+     factor_dz        vector contains factors for node distances
+     beta_left        
+     beta_right
+     E                matrix accounting for Gird-Error-Term       
+     main_E       main diagonal of E
+     lower_E      lower diagnal of E
+     upper_E      upper diagonal of E
+     C                matrix accounting for incorporation of settling velocity   
+     main_C       diagonal of C    
+     lower_C      lower diagonal C
+     upper_C      upper diagnal C
+     vphi             product of phi_i and v 
+     vphi_dz          derivative w.r.t. z of vphi
+     velterm          vector containg final deviation due to incorporation of settling velocity
+     r                vector containing factors based on node distance, water vapor saturation density and latent heat of sublimation
+     '''
 
      # Initialize variables    
      a = np.zeros(nz)

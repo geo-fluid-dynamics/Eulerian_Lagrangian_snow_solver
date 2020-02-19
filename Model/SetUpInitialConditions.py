@@ -9,12 +9,14 @@ RHO=4 Linear profile
 
 RHO=5 2Layer profile
 
+
 _______________________________________________
 Temperature T
 TT=1 Linear temperature profile, constant gradient
 TT=2 273 initial temperature
 TT=3 263 initial temperature
 TT=4 253 initial temperature
+TT=5 264 initial temperature
 """
 import numpy as np
 def initial_conditions(nz,Z, RHO, TT):
@@ -46,6 +48,7 @@ def initial_conditions(nz,Z, RHO, TT):
             T= T* T_ini
 
             return T
+
     else :
         print ('Value error for initial temperature profile')
 
@@ -117,7 +120,7 @@ def initial_conditions(nz,Z, RHO, TT):
 
         
     elif RHO == 5:
-        # RHO-i hansen ice crust
+        # RHO-i layered
         def rho_eff(nz,Z):
 
             rho_eff = np.ones(nz)

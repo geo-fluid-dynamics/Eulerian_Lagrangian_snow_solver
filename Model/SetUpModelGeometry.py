@@ -31,6 +31,7 @@ def set_up_model_geometry(SetVel, geom=1):
         nc = 50
         nz = nc +1  # number of nodes
         coord = np.linspace(0,Z_ini,nz)
+
     else:
         print ('Requested geometry not available')
 

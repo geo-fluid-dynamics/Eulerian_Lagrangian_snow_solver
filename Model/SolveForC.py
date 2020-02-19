@@ -1,41 +1,41 @@
-"""
-Computes the condensation rate c [kg/m^3/s]
-
-EQU : 72 from Hansen -> c = d/dz(D_eff * rho_dT dT/dz) - (1-phi_i) *rho_dT * dT/dt [- rho_v^eq * nabla (phi_i * v_i)] <- last term in square brackets results from incorporation of settling velocity
-
-============  ===============================
-Name          Description
-============  ===============================
-a             vector containing space independet variable a= (1-phi_i) *rho_dT/dt
-beta(x)       vector containing space dependent variable beta = D_eff*rho_dT
-c             Condensation rate (\^{c})
-H             Matrix acting on T_k^{n}
-    main_H        Main diagonal in H
-    lower_H       lower diagonal in H
-    upper_H       upper diagonal in H
-G             Matrix acting on T_k^{n-1}
-    main_G        main diagonal in G
-part1,
-part2         split equation for condensation rate part1-> T from the current iteration , part2 -> T from previous iteration
-FD_error      term accounting for nonuniform grid, if uniform grid: 0
-vphi          product of settling velocity and ice volume fraction
-factor_dz     vector with node specific factor for material properties used for Grid_Error_Term
-beta_left     vector with node specific factor for material properties used for Grid-Error_Term
-beta_right    vector with node specific factors for material properties used for Grid-Error_Term
-E             matrix for computation of FD_error
-    main_E        
-    lower_E 
-    upper_E   
-F             matrix for computation of deviations due to settling
-    main_F  
-    upper_F
-    lower_F 
-r              
-velterm       final deviation due to incorporation of settling
-"""
 import numpy as np
 
 def solve_for_c(T, T_prev, phi_i, k_eff, rhoC_eff, D_eff, rho_T, rho_dT, v_i, nz, dt, dz):
+    """
+    Computes condensation rate c [kg/m^3/s]
+
+    EQU : 72 from Hansen -> c = d/dz(D_eff * rho_dT dT/dz) - (1-phi_i) *rho_dT * dT/dt [- rho_v^eq * nabla (phi_i * v_i)] <- last term in square brackets results from incorporation of settling velocity
+
+    ============  ===============================
+    Name          Description
+    ============  ===============================
+    a             vector containing space independet variable a= (1-phi_i) *rho_dT/dt
+    beta(x)       vector containing space dependent variable beta = D_eff*rho_dT
+    c             Condensation rate (\^{c})
+    H             Matrix acting on T_k^{n}
+        main_H        Main diagonal in H
+        lower_H       lower diagonal in H
+        upper_H       upper diagonal in H
+    G             Matrix acting on T_k^{n-1}
+        main_G        main diagonal in G
+    part1,
+    part2         split equation for condensation rate part1-> T from the current iteration , part2 -> T from previous iteration
+    FD_error      term accounting for nonuniform grid, if uniform grid: 0
+    vphi          product of settling velocity and ice volume fraction
+    factor_dz     vector with node specific factor for material properties used for Grid_Error_Term
+    beta_left     vector with node specific factor for material properties used for Grid-Error_Term
+    beta_right    vector with node specific factors for material properties used for Grid-Error_Term
+    E             matrix for computation of FD_error
+        main_E        
+        lower_E 
+        upper_E   
+    F             matrix for computation of deviations due to settling
+        main_F  
+        upper_F
+        lower_F 
+    r              
+    velterm       final deviation due to incorporation of settling
+    """
     a = np.zeros(nz)
     beta = np.zeros(nz)
     G = np.zeros([nz,nz])          

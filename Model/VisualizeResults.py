@@ -25,7 +25,7 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
     f11_ax1.set_title('Temperature Profile', fontsize = 38, y =1.04)
     f11_ax1.set_xlabel('Temperature T [K]', fontsize = 38)
     f11_ax1.set_ylabel('Snow Height [m]',  fontsize = 38)
-    f11_ax1.set_xlim(253,273)
+    #f11_ax1.set_xlim(253,273)
     f11_ax1.set_ylim(0, np.max(all_coord))
     f11_ax1.xaxis.set_ticks(np.linspace(np.min(all_T), np.max(all_T), 5))
     f11_ax1.yaxis.set_ticks(np.linspace(0, np.max(all_coord), 5))

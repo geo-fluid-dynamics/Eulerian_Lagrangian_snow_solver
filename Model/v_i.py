@@ -36,6 +36,24 @@ import matplotlib.pyplot as plt
 from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i
 
 def settling_vel(T,nz,coord,phi_i,SetVel, plot='N'):
+    '''
+    computes settling velocity, its spatial derivative and vertical stress
+
+    Arguments
+    -------------
+    T: Temperature [K]
+    nz:  number of computational nodes
+    coord: coordinates of computational nodes in the snowpack [m]
+    phi_i: ice volume fraction [-]
+    SetVel: settling active: 'Y'; settling inactive: 'N'
+    plot: plot settling velocity for each iteration: 'Y'; not active: 'Y'
+    
+    Returns
+    --------------
+    v: settling velocity for each computational node in the snowpack
+    v_dz: spatial derivative of the settling velocity
+    sigma: vertical stress at each computational node in the snowpack
+    '''
     
     if SetVel == 'N':
         v = np.zeros(nz)

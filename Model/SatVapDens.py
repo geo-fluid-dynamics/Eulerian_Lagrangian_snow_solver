@@ -1,14 +1,14 @@
-"""
-Equilibrium water vapor density formulations and their derivatives as used in Löwe et al. (2019), Calonne et al. (2014) and Hansen and Foslien (2015)
-
-rho_T : equilibiurm water vapor density kg/m^3
-rho_dT : derivative w.r.t. temperature of equilibrium water vapor density kg/m^3/K
-"""
 import numpy as np
 import matplotlib.pyplot as plt
 from ConstantVariables import L_Cal, mH2O, kB, rho_i,T_ref_L, a0, a1, a2, f, rho_ref, T_ref_C, c1, c2, c3, c4, c5, c6, R_v
 
 def Sat_Vap_Dens(nz,T, SWVD, plot=False):
+    """
+    Equilibrium water vapor density formulations and their derivatives as used in Löwe et al. (2019), Calonne et al. (2014) and Hansen and Foslien (2015)
+
+    rho_T : equilibiurm water vapor density kg/m^3
+    rho_dT : derivative w.r.t. temperature of equilibrium water vapor density kg/m^3/K
+    """
     rho_T = np.zeros(nz)
     rho_dT = np.zeros(nz)
     if SWVD == 'Loewe':

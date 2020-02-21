@@ -53,7 +53,7 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
-def main_snow_model(geom = 1, RHO = 1, TT = 3, SWVD = 'Loewe', SetVel = 'Y'):
+def main_snow_model(geom = 1, RHO = 5, TT = 3, SWVD = 'Loewe', SetVel = 'Y'):
 
     [nz, dz, Z, Z_ini, coord] = set_up_model_geometry(SetVel, geom)
     [iter_max, dt, t_passed] = set_up_iter(10000)
@@ -72,14 +72,14 @@ def main_snow_model(geom = 1, RHO = 1, TT = 3, SWVD = 'Loewe', SetVel = 'Y'):
         =  store_results(all_D_eff, all_k_eff, all_SC, all_rhoC_eff, all_rho_T, all_T, all_c,all_phi_i,all_grad_T, all_rho_eff, all_coord, all_v_i, all_sigma, all_t_passed,all_dz, D_eff, k_eff, SC, phi_i, rhoC_eff, rho_T, T, c, grad_T, rho_eff, coord, v_i, sigma,  t, iter_max, nz,dz,t_passed)
         T_prev = T
         (T, a, b) = solve_diff_het_implicit(T, rho_T,rho_dT, k_eff, D_eff, rhoC_eff, phi_i, v_i, nz, dt, dz)
-        c = solve_for_c(T, T_prev, phi_i, k_eff, rhoC_eff, D_eff, rho_T, rho_dT, v_i, nz, dt, dz)
+        #c = solve_for_c(T, T_prev, phi_i, k_eff, rhoC_eff, D_eff, rho_T, rho_dT, v_i, nz, dt, dz)
         (phi_i, coord, Z, dz, v_dz, v_i, sigma) = solve_for_phi_i(T, c, dt, nz, phi_i, v_dz, coord, SetVel)
         [D_eff, k_eff, rhoC_eff, rho_T, rho_dT] = model_parameters(phi_i, T, Z, nz, coord, SWVD)
         t_passed = t_total(t_passed,dt)
         [dt, SC] = comp_dt(t_passed,dz, a,b)
 
-        plt.imshow(all_T)
-        plt.pause(0.005)
+        # plt.imshow(all_T)
+        # plt.pause(0.005)
 
 ### Visualize results
     visualize_results(all_T, all_c, all_phi_i, all_grad_T, all_rho_eff, all_SC, all_coord, all_v_i, all_sigma, iter_max, nz, Z, dt, all_dz,all_t_passed,  plot=True)

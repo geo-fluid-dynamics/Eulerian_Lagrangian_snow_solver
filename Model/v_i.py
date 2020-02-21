@@ -35,7 +35,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i
 
-def settling_vel(T,nz,coord,phi_i,SetVel, plot='N'):
+def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='const', plot='N'):
     '''
     computes settling velocity, its spatial derivative and vertical stress
 
@@ -61,49 +61,55 @@ def settling_vel(T,nz,coord,phi_i,SetVel, plot='N'):
         sigma = np.zeros(nz)
 
     elif SetVel == 'Y':
+        if v_i_opt =='eta_dependent':
+            v = np.ones(nz)
+            v_dz = np.ones(nz)        
+            sigma = np.zeros(nz) # vertical stress for each snowlayer isolated -> take cumulative sum for velocity computation
+            D = np.zeros(nz) # layer thickness [m]
+            eta = np.zeros(nz) # snow viscosity 
+
+    ###### Temperature contolled viscosity
+        # eta = eta_0 * rho_i * phi_i/c_eta * np.exp(a_eta *(T_fus - T) + b_eta * rho_i * phi_i)
         
-        v = np.ones(nz)
-        v_dz = np.ones(nz)        
-        sigma = np.zeros(nz) # vertical stress for each snowlayer isolated -> take cumulative sum for velocity computation
-        D = np.zeros(nz) # layer thickness [m]
-        eta = np.zeros(nz) # snow viscosity 
+    # ###### Constant viscosity     
+    #         if t_passed == 0
+            etatest1 = eta_0 * rho_i * 0.16/c_eta * np.exp(a_eta *(T_fus - 263)+ b_eta *rho_i * 0.16) 
+    # ###### Viscosity accoring to Wiese and Schneebeli
+    #         else: 
+    #             lower = 0.0061 * 0.22 * t_passed **(0.22 - 1)
+    #             etatest1 = sigma_prev/lower
+    ##############
+            D[1:] = coord[1:]-coord[:-1] 
+            D[0] = D[1] # lowest node does not have any layer
+            sigma_Dz =  g * phi_i * rho_i * D 
+            sigma_Dz[0] = sigma_Dz[0] +1736
+            sigmacum = np.cumsum(sigma_Dz) # Integral from bottom to top over vertical stresses
+            sigma0 = np.ones(nz) * sigmacum[-1]
+            sigma = sigma0 - sigmacum # Stress from the overlaying layers
 
-###### Temperature contolled viscosity
-       # eta = eta_0 * rho_i * phi_i/c_eta * np.exp(a_eta *(T_fus - T) + b_eta * rho_i * phi_i)
-       
-# ###### Constant viscosity     
-#         if t_passed == 0
-        etatest1 = eta_0 * rho_i * 0.16/c_eta * np.exp(a_eta *(T_fus - 263)+ b_eta *rho_i * 0.16) 
-# ###### Viscosity accoring to Wiese and Schneebeli
-#         else: 
-#             lower = 0.0061 * 0.22 * t_passed **(0.22 - 1)
-#             etatest1 = sigma_prev/lower
-##############
-        D[1:] = coord[1:]-coord[:-1] 
-        D[0] = D[1] # lowest node does not have any layer
-        sigma_Dz =  g * phi_i * rho_i * D 
-        sigma_Dz[0] = sigma_Dz[0] +1736
-        sigmacum = np.cumsum(sigma_Dz) # Integral from bottom to top over vertical stresses
-        sigma0 = np.ones(nz) * sigmacum[-1]
-        sigma = sigma0 - sigmacum # Stress from the overlaying layers
+            n = 2 #  if n = 2 no squareroot, of n = 1 squareroot, if n = 3 cubic root 
+        # "Isolated" velocities
+            v = -1/etatest1 * sigma**(n/2) * D
+        # Set velocity at the ground to 0
+            v[0] = 0
+        # Accumulate velocities so that nodes do not move away from each other
+            v_cum = np.cumsum(v)
 
-        n = 2 #  if n = 2 no squareroot, of n = 1 squareroot, if n = 3 cubic root 
-    # "Isolated" velocities
-        v = -1/etatest1 * sigma**(n/2) * D
-    # Set velocity at the ground to 0
-        v[0] = 0
-    # Accumulate velocities so that nodes do not move away from each other
-        v_cum = np.cumsum(v)
+            dz = coord[1:]-coord[:-1]
+            # Centered Finite Difference second derivative
+            v_dz[1:-1] = (v_cum[2:] - v_cum[:-2])/ (dz[1:] + dz[:-1]) # 2nd order FD scheme
+            v_0 = 0 # interpolated velocity below ground also 0 
+            v_end = - v_cum[-2] + 2 * v_cum[-1]
+            v_dz[0] =  (v_cum[1]-v_0)/ (2*dz[0])
+            v_dz[-1] = (v_end-v_cum[-2])/ (2*dz[-1])    
+            v = v_cum
 
-        dz = coord[1:]-coord[:-1]
-        # Centered Finite Difference second derivative
-        v_dz[1:-1] = (v_cum[2:] - v_cum[:-2])/ (dz[1:] + dz[:-1]) # 2nd order FD scheme
-        v_0 = 0 # interpolated velocity below ground also 0 
-        v_end = - v_cum[-2] + 2 * v_cum[-1]
-        v_dz[0] =  (v_cum[1]-v_0)/ (2*dz[0])
-        v_dz[-1] = (v_end-v_cum[-2])/ (2*dz[-1]) 
-        
-        v = v_cum
+        elif v_i_opt == 'polynom':
+            pass
+        elif v_i_opt == 'const':
+            v = - np.ones(nz) * 10e-7
+            v_dz = np.zeros(nz)
+            sigma = np.zeros(nz)
 
 
 #%% Paramtrization with dependence on z only    
@@ -152,7 +158,6 @@ def settling_vel(T,nz,coord,phi_i,SetVel, plot='N'):
             plt.show()
             fig1.savefig('phi_i(z).png', dpi= 300)
 
-                
         elif plot == 'N':
             pass
         else:

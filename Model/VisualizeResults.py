@@ -8,11 +8,11 @@ import numpy as np
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker as ticker
 from matplotlib.ticker import AutoMinorLocator
-
+from ConstantVariables import rho_i
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 
-def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_coord,all_v_i, all_sigma, nt,nz,Z,dt,all_dz,all_t_passed, plot=True):
+def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_coord,all_v_i, all_sigma, nt,nz,Z,dt,all_dz,all_t_passed, analytical = True, plot=True):
     t = all_t_passed[-1]
    # all_c = all_c * 10000000
 #%% Temperature plot
@@ -69,11 +69,24 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
     f13_ax3.plot(all_phi_i[0,:], all_coord[0,:], 'k-', label = 'after 0 s', linewidth = 3);
     f13_ax3.plot(all_phi_i[int(nt/3),:], all_coord[int(nt/3),:], 'k--', label = 'after %d s' %int(all_t_passed[(int(nt/3))]), linewidth = 3);
     f13_ax3.plot(all_phi_i[-1,:], all_coord[-1,:], 'k:',  label = 'after %d s' %int(all_t_passed[-1]), linewidth = 3);
+    if analytical ==True:
+        t1 = 0
+        t2 = int(all_t_passed[(int(nt/3))])
+        t3 = int(all_t_passed[-1])
+        z1 = all_v_i[0,:] *t1 + all_coord[0,:]
+        z2 = all_v_i[0,:] *t2 + all_coord[0,:]
+        z3 = all_v_i[0,:] *t3 + all_coord[0,:]
+        phi1 = 1/rho_i * all_c[0,:] * t1 + 0 + all_phi_i[0,:]
+        phi2 = 1/rho_i * all_c[0,:] * t2 + 0 + all_phi_i[0,:]
+        phi3 = 1/rho_i * all_c[0,:] * t3 + 0 + all_phi_i[0,:]
+        f13_ax3.plot(phi1, z1, 'r.',  label = 'after %d s' %int(all_t_passed[0]), linewidth = 3)
+        f13_ax3.plot(phi2, z2, 'r+',  label = 'after %d s' %int(all_t_passed[(int(nt/3))]), linewidth = 3)
+        f13_ax3.plot(phi3, z3, 'r*',  label = 'after %d s' %int(all_t_passed[-1]), linewidth = 3)
     f13_ax3.set_title('Ice Volume Fraction Profile', fontsize = 38, y=1.04)
     f13_ax3.set_xlabel('Ice Volume Fraction $\phi_i$ [-]', fontsize = 38)
     f13_ax3.set_ylabel('Snow Height [m]', fontsize = 38)
-    f13_ax3.set_xlim(0, np.max(all_phi_i))
-    f13_ax3.set_ylim(0, np.max(all_coord))
+  #  f13_ax3.set_xlim(0, np.max(all_phi_i))
+ #  f13_ax3.set_ylim(0, np.max(all_coord))
     f13_ax3.xaxis.set_major_formatter(ticker.FormatStrFormatter('%0.1f'))
    # f13_ax3.xaxis.set_major_locator(ticker.MultipleLocator(0.2))
    # f13_ax3.xaxis.set_minor_locator(ticker.MultipleLocator(0.05))

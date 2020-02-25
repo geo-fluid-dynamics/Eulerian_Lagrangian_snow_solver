@@ -12,7 +12,7 @@ from ConstantVariables import rho_i
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 
-def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_coord,all_v_i, all_sigma, nt,nz,Z,dt,all_dz,all_t_passed, analytical = True, plot=True):
+def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_coord,all_v_i, all_sigma, nt,nz,Z,dt,all_dz,all_t_passed, analytical = False, plot=True):
     t = all_t_passed[-1]
    # all_c = all_c * 10000000
 #%% Temperature plot
@@ -54,6 +54,7 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
   #  xticks = ( -0.5*10**(-5) , 0,  0.5 *10**(-5), 1 *10**(-5), 1.5 *10**(-5))
 #    f12_ax2.set_xlim(- 0.5 *10**(-5), 1.5 *10**(-5))
   #  f12_ax2.xaxis.set_ticks(xticks)
+    f12_ax2.yaxis.set_ticks(np.linspace(0, np.max(all_coord), 5))
     f12_ax2.xaxis.set_tick_params(which='major', labelsize = 36, length = 10, width = 3, pad =10)
     f12_ax2.xaxis.set_tick_params(which='minor' ,length = 5, width = 2)
 
@@ -79,7 +80,7 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
         t3 = int(all_t_passed[-1])
        # z1 = all_v_i[0,:] *t1 + all_coord[0,:]
        # z2 = all_v_i[0,:] *t2 + all_coord[0,:]
-        z3 = all_v_i[0,:] *t3 + all_coord[0,:]
+        z3 = all_v_i[-1,:] *t3 + all_coord[0,:]
       #  phi1 = 1/rho_i * all_c[0,:] * t1 + 0 + all_phi_i[0,:]
       #  phi2 = 1/rho_i * all_c[0,:] * t2 + 0 + all_phi_i[0,:]
         phi3 = 1/rho_i * all_c[0,:] * t3 + 0 + all_phi_i[0,:]
@@ -99,7 +100,7 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
         #f13_ax3.set_title('Ice Volume Fraction Profile $c = 0$, $v_i = const$', fontsize = 38, y=1.04)
         f13_ax1.set_xlabel('Difference of both solutions for depth', fontsize = 38)
         f13_ax1.set_ylabel('Snow Height $z$ [m]', fontsize = 38)
-        f13_ax2.set_xlabel('Difference of both solutions for depth ice volume', fontsize = 38)
+        f13_ax2.set_xlabel('Difference of both solutions for ice volume', fontsize = 38)
         f13_ax2.set_ylabel('Snow Height $z$ [m]', fontsize = 38)
         f13_ax1.xaxis.set_tick_params(which='minor' ,length = 5, width = 2)
 
@@ -199,36 +200,37 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
     
 #%% PLOT MESH and HEAT MAP
 
-#    fig3 = plt.figure(figsize= (13,11))
-#    spec3 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig3)
-#    f3_ax1 = fig3.add_subplot(spec3[0 0])
-#    X = np.zeros_like(all_T)
-#
-#    for i in range(nt):
-#        X[i,:] = i
-#   
-#    cs =f3_ax1.scatter (X,all_coord, c= all_T, s=2.5,marker='s',cmap= 'viridis')
-#    labels = [int(all_t_passed[0]),int(all_t_passed[0]), int(all_t_passed[int(nt/4)]), int(all_t_passed[int(int(int(nt/3)))]), int(all_t_passed[int(3*nt/4)]), int(all_t_passed[-1])]
-#    f3_ax1.set_xticklabels(labels)
-#    # cs = f3_ax1.contourf(X, all_coord, all_T, 199, vmin=253, vmax=273.00, cmap = 'viridis')
-#   
-#    cbar = fig3.colorbar(cs)
-#    cbar.set_label('Temperature [K]',fontsize=36)
-#    cbar.set_clim(253,273)
-#    cbarticks= np.arange(253,274,4)
-#    cbar.set_ticks(cbarticks)
-#    cbar.ax.tick_params(labelsize = 36)
-#    f3_ax1.xaxis.set_tick_params(labelsize = 36)
-#    f3_ax1.yaxis.set_tick_params(labelsize = 36)
-#    fig3.suptitle(r' Temperature field for each iteration' '\n' r' and total simulation time: %d s' %t, fontsize=25, y=1.05)
-#    f3_ax1.set_ylabel('Snow Height [m]', fontsize = 36)
-#    f3_ax1.set_xlabel('Time [s]', fontsize = 36)   
-#    f3_ax1.xaxis.set_tick_params(labelsize = 36)
-#    f3_ax1.yaxis.set_tick_params(labelsize = 36)
-#    for i in range(nz):
-#        f3_ax1.plot(all_coord[:,i], 'w-', lw=0.5)
-#    fig3.savefig('Tfield.png', dpi= 300)
-#    plt.show(fig3)
+    fig3 = plt.figure(figsize= (13,11))
+    spec3 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig3)
+    f3_ax1 = fig3.add_subplot(spec3[0,0])
+    X = np.zeros_like(all_phi_i)
+
+    for i in range(nt):
+        X[i,:] = i
+    
+    cs =f3_ax1.scatter (X,all_coord, c= all_phi_i, s=2.5,marker='s',cmap= 'viridis')
+    labels = [int(all_t_passed[0]),int(all_t_passed[0]), int(all_t_passed[int(nt/4)]), int(all_t_passed[int(int(int(nt/3)))]), int(all_t_passed[int(3*nt/4)]), int(all_t_passed[-1])]
+    f3_ax1.set_xticklabels(labels)
+    # cs = f3_ax1.contourf(X, all_coord, all_phi, 199, vmin=253, vmax=273.00, cmap = 'viridis')
+    
+    cbar = fig3.colorbar(cs)
+    cbar.set_label('Ice Volume fraction',fontsize=36)
+    cbar.set_clim(0.1,0.5)
+    cbarticks= np.arange(0.1,0.5,4)
+    cbar.set_ticks(cbarticks)
+    cbar.ax.tick_params(labelsize = 36)
+    f3_ax1.xaxis.set_tick_params(labelsize = 36)
+    f3_ax1.yaxis.set_tick_params(labelsize = 36)
+    #fig3.suptitle(r' Temperature field for each iteration' '\n' r' and total simulation time: %d s' %t, fontsize=25, y=1.05)
+    f3_ax1.set_ylabel('Snow Height [m]', fontsize = 36)
+    f3_ax1.set_xlabel('Time [s]', fontsize = 36)   
+    f3_ax1.xaxis.set_tick_params(labelsize = 36)
+    f3_ax1.yaxis.set_tick_params(labelsize = 36)
+    f3_ax1.yaxis.set_ticks(np.linspace(0, np.max(all_coord), 5))
+
+    for i in range(nz):
+        f3_ax1.plot(all_coord[:,i], 'w-', lw=0.5)
+    fig3.savefig('IceVolumefield.png', tight=True, dpi= 300)
 
 #%% Plot Vectors for velocity in mesh
     

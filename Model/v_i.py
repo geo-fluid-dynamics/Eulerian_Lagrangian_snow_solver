@@ -35,7 +35,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i
 
-def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='const', plot='N'):
+def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='polynom', plot='N'):
     '''
     computes settling velocity, its spatial derivative and vertical stress
 
@@ -105,20 +105,17 @@ def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='const', plot='N'):
             v = v_cum
 
         elif v_i_opt == 'polynom':
-            pass
+            v = - np.ones(nz) * 10e-7
+            v = v/coord[-1] * coord
+            v_dz = v/coord[-1]
+            sigma = np.zeros(nz)
+
         elif v_i_opt == 'const':
             v = - np.ones(nz) * 10e-7
             v_dz = np.zeros(nz)
             sigma = np.zeros(nz)
 
 
-#%% Paramtrization with dependence on z only    
-
-#        V = 5e-7
-#        v_coord = v
-#        coord = np.linspace(0,Z,nz)
-#        v = - V/Z_ini * coord
-#        v_dz = - V/Z_ini
 
 #%% Paramtrization with dependence on phi_i and z        
 #        v_phi = np.ones(nz)

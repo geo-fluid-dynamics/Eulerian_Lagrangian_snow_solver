@@ -16,15 +16,15 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
     t = all_t_passed[-1]
    # all_c = all_c * 10000000
 #%% Temperature plot
-    fig11 = plt.figure(figsize= (11.5,10))
+    fig11 = plt.figure(figsize= (13,11))
     spec11 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig11)
     f11_ax1 = fig11.add_subplot(spec11[0, 0])
     f11_ax1.plot(all_T[0,:], all_coord[0,:],'k-', label = 'after 0 s', linewidth = 3);
     f11_ax1.plot(all_T[int(int(nt/3)),:], all_coord[int(int(nt/3)),:],'k--',  label = 'after %d s' %int(all_t_passed[(int(nt/3))]), linewidth = 3);   
     f11_ax1.plot(all_T[-1,:], all_coord[-1,:],'k:', label = 'after %d s' %int(all_t_passed[-1]), linewidth = 3);
-    f11_ax1.set_title('Temperature Profile', fontsize = 38, y =1.04)
-    f11_ax1.set_xlabel('Temperature T [K]', fontsize = 38)
-    f11_ax1.set_ylabel('Snow Height [m]',  fontsize = 38)
+    f11_ax1.set_title('Temperature Profile $c = 0$, $v_i = const$', fontsize = 38, y =1.04)
+    f11_ax1.set_xlabel('Temperature $T$ [K]', fontsize = 38)
+    f11_ax1.set_ylabel('Snow Height $z$ [m]',  fontsize = 38)
     #f11_ax1.set_xlim(253,273)
     f11_ax1.set_ylim(0, np.max(all_coord))
     f11_ax1.xaxis.set_ticks(np.linspace(np.min(all_T), np.max(all_T), 5))
@@ -36,15 +36,15 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
     fig11.savefig('TemperatureProfile.png', dpi =300)
 
 #%% Condensation Rate plot    
-    fig12 = plt.figure(figsize= (11.5,10))
+    fig12 = plt.figure(figsize= (13,11))
     spec12 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig12)
     f12_ax2 = fig12.add_subplot(spec12[0, 0])
     f12_ax2.plot(all_c[0,:], all_coord[0,:], 'k-', label = 'after 0 s', linewidth = 3);
     f12_ax2.plot(all_c[int(nt/3),:], all_coord[int(nt/3),:], 'k--',label = 'after %d s' %int(all_t_passed[(int(nt/3))]), linewidth = 3);
     f12_ax2.plot(all_c[-1,:], all_coord[-1,:], 'k:', label = 'after %d s' %int(all_t_passed[-1]), linewidth = 3);
-    f12_ax2.set_title('Condensation Rate Profile ', fontsize = 38, y=1.04)
+    f12_ax2.set_title('Condensation Rate Profile $c = 0$, $v_i = const$', fontsize = 38, y=1.04)
     f12_ax2.set_xlabel('Condensation Rate $\^{c}$ [kg m$^{-3}$ s$^{-1}$]', fontsize = 38)
-    f12_ax2.set_ylabel('Snow Height [m]', fontsize = 38)
+    f12_ax2.set_ylabel('Snow Height $z$ [m]', fontsize = 38)
     f12_ax2.set_ylim(0, np.max(all_coord))
   #  loc =  np.arange(-0.5*10**(-5), 1.5 *10**(-5), 0.5*10**(-5))
 
@@ -60,31 +60,65 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
     f12_ax2.yaxis.set_tick_params(labelsize = 36, length = 10, width = 3, pad =10)
     f12_ax2.legend(fontsize = 26, loc=3)
     f12_ax2.grid()
-    fig12.savefig('Condensationrateprofile.png', dpi= 300)
+    fig12.savefig('Condensationrateprofile.png', tight = True, dpi= 300, loc = 'center')
 
 #%% Ice volume fraction
-    fig13 = plt.figure(figsize= (11.5,10))
-    spec13 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig13)
+    if analytical == True:
+        fig13 = plt.figure(figsize= (13,33))
+        spec13 = gridspec.GridSpec(ncols=1, nrows=3, figure=fig13)
+    else:
+        fig13 = plt.figure(figsize= (13,11))
+        spec13 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig13)
     f13_ax3 = fig13.add_subplot(spec13[0, 0])
-    f13_ax3.plot(all_phi_i[0,:], all_coord[0,:], 'k-', label = 'after 0 s', linewidth = 3);
-    f13_ax3.plot(all_phi_i[int(nt/3),:], all_coord[int(nt/3),:], 'k--', label = 'after %d s' %int(all_t_passed[(int(nt/3))]), linewidth = 3);
-    f13_ax3.plot(all_phi_i[-1,:], all_coord[-1,:], 'k:',  label = 'after %d s' %int(all_t_passed[-1]), linewidth = 3);
+    f13_ax3.plot(all_phi_i[0,:], all_coord[0,:], 'k-', label = 'after 0 s     - numerical solution', linewidth = 3);
+    f13_ax3.plot(all_phi_i[int(nt/3),:], all_coord[int(nt/3),:], 'k--', label = 'after %d s - numerical solution' %int(all_t_passed[(int(nt/3))]), linewidth = 3);
+    f13_ax3.plot(all_phi_i[-1,:], all_coord[-1,:], 'k:',  label = 'after %d s - numerical solution' %int(all_t_passed[-1]), linewidth = 3);
     if analytical ==True:
-        t1 = 0
-        t2 = int(all_t_passed[(int(nt/3))])
+       # t1 = 0
+       # t2 = int(all_t_passed[(int(nt/3))])
         t3 = int(all_t_passed[-1])
-        z1 = all_v_i[0,:] *t1 + all_coord[0,:]
-        z2 = all_v_i[0,:] *t2 + all_coord[0,:]
+       # z1 = all_v_i[0,:] *t1 + all_coord[0,:]
+       # z2 = all_v_i[0,:] *t2 + all_coord[0,:]
         z3 = all_v_i[0,:] *t3 + all_coord[0,:]
-        phi1 = 1/rho_i * all_c[0,:] * t1 + 0 + all_phi_i[0,:]
-        phi2 = 1/rho_i * all_c[0,:] * t2 + 0 + all_phi_i[0,:]
+      #  phi1 = 1/rho_i * all_c[0,:] * t1 + 0 + all_phi_i[0,:]
+      #  phi2 = 1/rho_i * all_c[0,:] * t2 + 0 + all_phi_i[0,:]
         phi3 = 1/rho_i * all_c[0,:] * t3 + 0 + all_phi_i[0,:]
-        f13_ax3.plot(phi1, z1, 'r.',  label = 'after %d s' %int(all_t_passed[0]), linewidth = 3)
-        f13_ax3.plot(phi2, z2, 'r+',  label = 'after %d s' %int(all_t_passed[(int(nt/3))]), linewidth = 3)
-        f13_ax3.plot(phi3, z3, 'r*',  label = 'after %d s' %int(all_t_passed[-1]), linewidth = 3)
-    f13_ax3.set_title('Ice Volume Fraction Profile', fontsize = 38, y=1.04)
+      #  f13_ax3.plot(phi1, z1, 'r.',  label = 'after %d s' %int(all_t_passed[0]), linewidth = 3)
+      #  f13_ax3.plot(phi2, z2, 'r+',  label = 'after %d s' %int(all_t_passed[(int(nt/3))]), linewidth = 3)
+        f13_ax3.plot(phi3, z3, 'r+',markersize = 5,  label = 'after %d s - analytical solution' %int(all_t_passed[-1]))
+        z_diff = all_coord[-1,:] - z3
+        phi_diff = all_phi_i[-1,:] - phi3
+        f13_ax1 = fig13.add_subplot(spec13[1, 0])
+        f13_ax1.plot(z_diff, all_coord[-1,:], 'k:',  label = 'Depth', linewidth = 3)
+       # f13_ax1.xaxis.set_major_formatter(ticker.FormatStrFormatter('%0.4e'))
+
+        f13_ax2 = fig13.add_subplot(spec13[2, 0])
+
+        f13_ax2.plot(phi_diff, all_coord[-1,:], 'k--',  label = 'Ice Volume', linewidth = 3)
+
+        #f13_ax3.set_title('Ice Volume Fraction Profile $c = 0$, $v_i = const$', fontsize = 38, y=1.04)
+        f13_ax1.set_xlabel('Difference of both solutions for depth', fontsize = 38)
+        f13_ax1.set_ylabel('Snow Height $z$ [m]', fontsize = 38)
+        f13_ax2.set_xlabel('Difference of both solutions for depth ice volume', fontsize = 38)
+        f13_ax2.set_ylabel('Snow Height $z$ [m]', fontsize = 38)
+        f13_ax1.xaxis.set_tick_params(which='minor' ,length = 5, width = 2)
+
+        f13_ax1.yaxis.set_ticks(np.linspace(0, np.max(all_coord), 5))
+        f13_ax1.xaxis.set_tick_params(labelsize = 36, length = 10, width = 3, pad =10)
+        f13_ax1.yaxis.set_tick_params(labelsize = 36, length = 10, width = 3, pad =10)
+        f13_ax1.xaxis.set_tick_params(which='minor' ,length = 5, width = 2)
+
+        f13_ax2.yaxis.set_ticks(np.linspace(0, np.max(all_coord), 5))
+        f13_ax2.xaxis.set_tick_params(labelsize = 36, length = 10, width = 3, pad =10)
+        f13_ax2.yaxis.set_tick_params(labelsize = 36, length = 10, width = 3, pad =10)
+        f13_ax2.grid()
+        f13_ax1.grid()
+
+
+
+    f13_ax3.set_title('Ice Volume Fraction Profile $c = 0$, $v_i = const$', fontsize = 38, y=1.04)
     f13_ax3.set_xlabel('Ice Volume Fraction $\phi_i$ [-]', fontsize = 38)
-    f13_ax3.set_ylabel('Snow Height [m]', fontsize = 38)
+    f13_ax3.set_ylabel('Snow Height $z$ [m]', fontsize = 38)
   #  f13_ax3.set_xlim(0, np.max(all_phi_i))
  #  f13_ax3.set_ylim(0, np.max(all_coord))
     f13_ax3.xaxis.set_major_formatter(ticker.FormatStrFormatter('%0.1f'))
@@ -100,18 +134,18 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
     f13_ax3.yaxis.set_tick_params(labelsize = 36, length = 10, width = 3, pad =10)
     f13_ax3.legend(fontsize = 26)
     f13_ax3.grid()
-    fig13.savefig('Icevolumefractionprofile.png', dpi= 300)
+    fig13.savefig('Icevolumefractionprofile.png', tight = True, dpi= 300, loc = 'center')
 
 #%% Temperature gradient plot
-    fig14 = plt.figure(figsize= (11.5,10))
+    fig14 = plt.figure(figsize= (13,11))
     spec14 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig14)
     f14_ax4 = fig14.add_subplot(spec14[0,0])
     f14_ax4.plot(all_grad_T[0,:],  all_coord[0,:], 'k-', label= 'after 0 s', linewidth = 3);
     f14_ax4.plot(all_grad_T[int(nt/3),:], all_coord[int(nt/3),:], 'k--', label= 'after %d s' %int(all_t_passed[(int(nt/3))]), linewidth = 3);
     f14_ax4.plot(all_grad_T[-1,:], all_coord[-1,:], 'k:',label= 'after %d s' %int(all_t_passed[-1]), linewidth = 3);
-    f14_ax4.set_title('Local Temperature Gradient', fontsize = 38, y=1.04)
-    f14_ax4.set_xlabel(' Temperature Gradient $\partial_z$T [K m$^{-1}$]', fontsize = 38)
-    f14_ax4.set_ylabel('Snow Height [m]', fontsize = 38)
+    f14_ax4.set_title('Local Temperature Gradient $c = 0$, $v_i = const$', fontsize = 38, y=1.04)
+    f14_ax4.set_xlabel(' Temperature Gradient $\partial_zT$ [K m$^{-1}$]', fontsize = 38)
+    f14_ax4.set_ylabel('Snow Height $z$ [m]', fontsize = 38)
 #    f14_ax4.set_xlim([01000])
     f14_ax4.set_ylim(0, np.max(all_coord))
     f14_ax4.yaxis.set_ticks(np.linspace(0, np.max(all_coord), 5))
@@ -119,18 +153,18 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
     f14_ax4.yaxis.set_tick_params(labelsize = 36, length = 10, width = 3, pad =10)
     f14_ax4.legend(fontsize = 26)
     f14_ax4.grid()
-    fig14.savefig('Temperaturegradient', dpi= 300)
+    fig14.savefig('Temperaturegradient', tight = True, dpi= 300, loc = 'center')
 
 #%% Interval size and evolution
-    fig15 = plt.figure(figsize= (11.5,10))
+    fig15 = plt.figure(figsize= (13,11))
     spec15 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig15)
     f15_ax5 = fig15.add_subplot(spec15[0, 0])
     f15_ax5.plot(all_dz[0,:], all_coord[0,1:], 'k-', label = 'after 0 s', linewidth = 3);
     f15_ax5.plot(all_dz[int(nt/3),:], all_coord[int(nt/3),1:], 'k--', label = 'after %d s' %int(all_t_passed[(int(nt/3))]), linewidth = 3);   
     f15_ax5.plot(all_dz[-1,:], all_coord[-1,1:], 'k:', label = 'after %d s' %int(all_t_passed[-1]), linewidth = 3);
-    f15_ax5.set_title('Node Distances Irregular Grid', fontsize = 38, y =1.04)
-    f15_ax5.set_xlabel('Node Distance $\Delta$z$_k$ [m]', fontsize = 38)
-    f15_ax5.set_ylabel('Snow Height [m]',  fontsize = 38)    
+    f15_ax5.set_title('Node Distances Irregular Grid $c = 0$, $v_i = const$', fontsize = 38, y =1.04)
+    f15_ax5.set_xlabel('Node Distance $\Delta z_k$ [m] ', fontsize = 38)
+    f15_ax5.set_ylabel('Snow Height $z$ [m]',  fontsize = 38)    
     f15_ax5.set_xlim(np.min(all_dz),np.max(all_dz))
     f15_ax5.set_ylim(0, np.max(all_coord))
     f15_ax5.xaxis.set_major_formatter(ticker.FormatStrFormatter('%0.3e'))
@@ -140,18 +174,18 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
     f15_ax5.yaxis.set_tick_params(labelsize = 36, length = 10, width = 3, pad =10)
     f15_ax5.legend(fontsize = 26)
     f15_ax5.grid()
-    fig15.savefig('Intervalsofirregulargrid.png', dpi= 300)
+    fig15.savefig('Intervalsofirregulargrid.png',  tight = True, dpi= 300, loc = 'center')
 
 #%% Velocity
-    fig16 = plt.figure(figsize= (11.5,10))
+    fig16 = plt.figure(figsize= (13,11))
     spec16 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig16)
     f16_ax6 = fig16.add_subplot(spec16[0,  0])
     f16_ax6.plot(all_v_i[0,:], all_coord[0,:],'k-', label = 'after 0 s', linewidth = 4);
     f16_ax6.plot(all_v_i[int(nt/3),:],all_coord[int(nt/3),:], 'k--', label = 'after %d s' %int(all_t_passed[(int(nt/3))]), linewidth = 4);
     f16_ax6.plot(all_v_i[-1,:], all_coord[-1,:], 'k:', label = 'after %d s' %int(all_t_passed[-1]), linewidth = 4);
-    f16_ax6.set_title('Settling Velocity', fontsize = 38, y=1.04)
-    f16_ax6.set_xlabel('Velocity v$_i$ [m s$^{-1}$]', fontsize = 38)
-    f16_ax6.set_ylabel('Snow Height [m]', fontsize = 38)
+    f16_ax6.set_title('Settling Velocity $c = 0$, $v_i = const$', fontsize = 38, y=1.04)
+    f16_ax6.set_xlabel('Velocity $v_i$ [m s$^{-1}$]', fontsize = 38)
+    f16_ax6.set_ylabel('Snow Height $z$ [m]', fontsize = 38)
     f16_ax6.set_xlim(np.min(all_v_i),np.max(all_v_i))
     f16_ax6.set_ylim(0, np.max(all_coord))
     f16_ax6.xaxis.set_major_formatter(ticker.FormatStrFormatter('%0.1e'))
@@ -161,7 +195,7 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
     f16_ax6.yaxis.set_tick_params(labelsize = 36, length = 10, width = 3, pad =10)    
     f16_ax6.legend(fontsize = 26)
     f16_ax6.grid()
-    fig16.savefig('Velocity.png', dpi= 300)
+    fig16.savefig('Velocity.png',  tight = True, dpi= 300, loc = 'center')
     
 #%% PLOT MESH and HEAT MAP
 
@@ -198,7 +232,7 @@ def visualize_results(all_T,all_c,all_phi_i,all_grad_T,all_rho_eff, all_N,all_co
 
 #%% Plot Vectors for velocity in mesh
     
-    #fig2 = plt.figure(figsize= (11.5,11))
+    #fig2 = plt.figure(figsize= (13,11))
     #spec2 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig2)
     #f2_ax1 = fig2.add_subplot(spec2[0, 0])    
     #labels2 = [int(all_t_passed[0]),int(all_t_passed[0]), int(all_t_passed[(int(int(nt/3)))]), int(all_t_passed[int(nt*2/5)]), int(all_t_passed[int(3*int(int(nt/3)))]), int(all_t_passed[int(4*int(int(nt/3)))]), int(all_t_passed[-1])]

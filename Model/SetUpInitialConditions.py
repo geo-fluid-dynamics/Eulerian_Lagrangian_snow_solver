@@ -135,10 +135,12 @@ def initial_conditions(nz,Z, RHO, TT):
 
             nz2 = nz
             rho_eff[0] = 200
-            for i in range(nz1):
+            for i in range(nz1-2):
                 rho_eff[i]= 200 
-                
-            rho_eff[nz1:nz2] = 300
+            rho_eff[nz1-2] = 225
+            rho_eff[nz1-1] = 250
+            rho_eff[nz1] = 275    
+            rho_eff[nz1+1:nz2] = 300
             return rho_eff
     elif RHO ==6: # homogeneous case Experiment (8) from Wiese and Schneebeli (2017)
         def rho_eff(nz,Z):

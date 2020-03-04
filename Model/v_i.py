@@ -35,7 +35,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i
 
-def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='polynom', plot='N'):
+def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
     '''
     computes settling velocity, its spatial derivative and vertical stress
 
@@ -114,6 +114,32 @@ def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='polynom', plot='N'):
             v = - np.ones(nz) * 10e-7
             v_dz = np.zeros(nz)
             sigma = np.zeros(nz)
+            v = - np.ones(nz)
+        
+        elif v_i_opt == 'phi_dependent':
+            v_dz = np.ones(nz)        
+            sigma = np.zeros(nz)
+            v = - np.ones(nz) * 1e-7  # * coord /(coord[-1])
+            #V = - 1e-7
+            # depth dependence of v
+           # v = V/coord[-1] * coord
+            # stop shrinking for ice volume fractions bigger than 1
+          #  phi_max = (0.1-0.9)/coord[-1] * coord +0.9
+            phi_max = 0.25
+            restrict =( 1-phi_i/phi_max)
+            v = v * restrict
+            v_cum = np.cumsum(v)
+            dz = coord[1:]-coord[:-1]
+            # Centered Finite Difference second derivative
+            #v_0 = 0 # interpolated velocity below ground also 0 
+            v_dz[1:-1] = (v_cum[2:] - v_cum[:-2])/ (dz[1:] + dz[:-1]) # 2nd order FD scheme
+            v_0 = 0 # interpolated velocity below ground also 0 
+            v_end = - v_cum[-2] + 2 * v_cum[-1]
+            v_dz[0] =  (v_cum[1]-v_0)/ (2*dz[0])
+            v_dz[-1] = (v_end-v_cum[-2])/ (2*dz[-1])    
+            v = v_cum
+
+
 
 
 
@@ -140,12 +166,12 @@ def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='polynom', plot='N'):
             f1_ax1 = fig1.add_subplot(1,1,1)
          #   f1_ax1.set_ylim((-5e-7,0))
             f1_ax1.set_xlim((0,0.2))
-            f1_ax1.plot(coord,v_dz , linewidth = 1.5);
+            f1_ax1.plot(coord,v , linewidth = 1.5);
           #  f1_ax1.plot(coord,T, linewidth = 1.5);
           #  f1_ax1.plot(coord, v , linewidth = 1.5);
 
             f1_ax1.set_title('Settling velocity $v_i(z)$', fontsize = 20, y =1.04)
-            f1_ax1.set_title('Snow Viscosity', fontsize = 20, y =1.04)
+            f1_ax1.set_title('Settling Velocity', fontsize = 20, y =1.04)
 
             f1_ax1.set_ylabel('Velocity [m/s]', fontsize=15)
             f1_ax1.set_xlabel('Location in the snowpack [m]',  fontsize=15)

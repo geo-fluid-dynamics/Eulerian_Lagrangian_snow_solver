@@ -37,7 +37,7 @@ f22_ax1 = fig22.add_subplot(spec22[0, 0])
 f22_ax1.plot( all_coord_1[:,-1],'k-', label = '$V = 10^{-5}ms^{-1}$', linewidth = 3);
 f22_ax1.plot( all_coord_2[: ,-1],'k--',  label = '$V = 10^{-6}ms^{-1}$' , linewidth = 3);   
 f22_ax1.plot(all_coord_3[:,-1],'k:', label = '$V = 10^{-7}ms^{-1}$' , linewidth = 3);
-f22_ax1.set_title('Snowheight \n $c = 0$, $v=const$  after 60000s ', fontsize = 38, y =1.04)
+f22_ax1.set_title('Snow Height \n $c = 0$, $v=const$  after 60000s ', fontsize = 38, y =1.04)
 f22_ax1.set_xlabel('Iterations [-]', fontsize = 38)
 f22_ax1.set_ylabel('Snow Height $Z$ [m]',  fontsize = 38)
 f22_ax1.xaxis.set_tick_params(labelsize = 36, length = 10, width = 3, pad =10)

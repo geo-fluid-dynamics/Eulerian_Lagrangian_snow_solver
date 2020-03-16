@@ -35,7 +35,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i
 
-def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
+def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='const', plot='N'):
     '''
     computes settling velocity, its spatial derivative and vertical stress
 
@@ -105,27 +105,26 @@ def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
             v = v_cum
 
         elif v_i_opt == 'polynom':
-            v = - np.ones(nz) * 10e-7
+            v = - np.ones(nz) * 1e-6
             v = v/coord[-1] * coord
             v_dz = v/coord[-1]
             sigma = np.zeros(nz)
 
         elif v_i_opt == 'const':
-            v = - np.ones(nz) * 10e-7
+            v = - np.ones(nz) * 1e-6
             v_dz = np.zeros(nz)
             sigma = np.zeros(nz)
-            v = - np.ones(nz)
         
         elif v_i_opt == 'phi_dependent':
             v_dz = np.ones(nz)        
             sigma = np.zeros(nz)
-            v = - np.ones(nz) * 1e-7  # * coord /(coord[-1])
+            v = - np.ones(nz) * 1e-6  # * coord /(coord[-1])
             #V = - 1e-7
             # depth dependence of v
            # v = V/coord[-1] * coord
             # stop shrinking for ice volume fractions bigger than 1
-          #  phi_max = (0.1-0.9)/coord[-1] * coord +0.9
-            phi_max = 0.25
+           # phi_max = (0.1-0.9)/coord[-1] * coord +0.9
+            phi_max = 1
             restrict =( 1-phi_i/phi_max)
             v = v * restrict
             v_cum = np.cumsum(v)

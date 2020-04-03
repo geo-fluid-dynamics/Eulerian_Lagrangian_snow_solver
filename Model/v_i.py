@@ -35,7 +35,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i
 
-def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='const', plot='N'):
+def settling_vel(T,nz,z,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
     '''
     computes settling velocity, its spatial derivative and vertical stress
 
@@ -43,7 +43,7 @@ def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='const', plot='N'):
     -------------
     T: Temperature [K]
     nz:  number of computational nodes
-    coord: coordinates of computational nodes in the snowpack [m]
+    z: coordinates of computational nodes in the snowpack [m]
     phi_i: ice volume fraction [-]
     SetVel: settling active: 'Y'; settling inactive: 'N'
     plot: plot settling velocity for each iteration: 'Y'; not active: 'Y'
@@ -58,16 +58,23 @@ def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='const', plot='N'):
     if SetVel == 'N':
         v = np.zeros(nz)
         v_dz = np.zeros(nz)
+
         sigma = np.zeros(nz)
 
     elif SetVel == 'Y':
-        if v_i_opt =='eta_dependent':
-            v = np.ones(nz)
-            v_dz = np.ones(nz)        
-            sigma = np.zeros(nz) # vertical stress for each snowlayer isolated -> take cumulative sum for velocity computation
-            D = np.zeros(nz) # layer thickness [m]
-            eta = np.zeros(nz) # snow viscosity 
+        v = np.ones(nz)    # settlement velocity
+        v_dz = np.ones(nz) # local strain rate
 
+        D = 1e-4          # coefficient
+        sigma = np.zeros(nz)            
+        v = np.zeros(nz)                # local velocity
+        D_rate = np.zeros(nz)           # Deformation rate [s-1]
+        D_coeff = np.zeros(nz)          # Deformation rate coefficient [s-1]
+
+        if v_i_opt =='eta_dependent':
+            dz = np.zeros(nz-1) # layer thickness [m]
+            eta = np.zeros(nz) # snow viscosity 
+            sigma_Dz = np.zeros(nz)
     ###### Temperature contolled viscosity
         # eta = eta_0 * rho_i * phi_i/c_eta * np.exp(a_eta *(T_fus - T) + b_eta * rho_i * phi_i)
         
@@ -79,95 +86,47 @@ def settling_vel(T,nz,coord,phi_i,SetVel, v_i_opt ='const', plot='N'):
     #             lower = 0.0061 * 0.22 * t_passed **(0.22 - 1)
     #             etatest1 = sigma_prev/lower
     ##############
-            D[1:] = coord[1:]-coord[:-1] 
-            D[0] = D[1] # lowest node does not have any layer
-            sigma_Dz =  g * phi_i * rho_i * D 
-            sigma_Dz[0] = sigma_Dz[0] +1736
+            dz[:] = z[1:]-z[:-1] 
+            sigma_Dz[1:] =  g * phi_i[1:] * rho_i * dz[:]
+            sigma_Dz[0] = g * phi_i[0] * rho_i * dz[0] +1736
             sigmacum = np.cumsum(sigma_Dz) # Integral from bottom to top over vertical stresses
             sigma0 = np.ones(nz) * sigmacum[-1]
             sigma = sigma0 - sigmacum # Stress from the overlaying layers
-
             n = 2 #  if n = 2 no squareroot, of n = 1 squareroot, if n = 3 cubic root 
-        # "Isolated" velocities
-            v = -1/etatest1 * sigma**(n/2) * D
-        # Set velocity at the ground to 0
-            v[0] = 0
+        # Deformation rate
+            D_rate = -1/etatest1 * sigma**(n/2) 
         # Accumulate velocities so that nodes do not move away from each other
-            v_cum = np.cumsum(v)
-
-            dz = coord[1:]-coord[:-1]
-            # Centered Finite Difference second derivative
-            v_dz[1:-1] = (v_cum[2:] - v_cum[:-2])/ (dz[1:] + dz[:-1]) # 2nd order FD scheme
-            v_0 = 0 # interpolated velocity below ground also 0 
-            v_end = - v_cum[-2] + 2 * v_cum[-1]
-            v_dz[0] =  (v_cum[1]-v_0)/ (2*dz[0])
-            v_dz[-1] = (v_end-v_cum[-2])/ (2*dz[-1])    
-            v = v_cum
+            v[1:] = np.cumsum(D_rate[1:] * dz[:] )
+            v[0]  = 0
+            v_dz = D_rate
 
         elif v_i_opt == 'polynom':
-            v = - np.ones(nz) * 1e-6
-            v = v/coord[-1] * coord
-            v_dz = v/coord[-1]
-            sigma = np.zeros(nz)
+            D_coeff = - np.ones(nz) * D        # defomration rate coefficient 
+            D_rate = D_coeff                   # [1/s] Deformation rate
+            v = D_rate * z                 # [m/s] settlement velocity
+       	    v_dz = D_rate
 
         elif v_i_opt == 'const':
-            v = - np.ones(nz) * 1e-6
+            v = - np.ones(nz) * D
             v_dz = np.zeros(nz)
-            sigma = np.zeros(nz)
-        
         elif v_i_opt == 'phi_dependent':
-            v_dz = np.ones(nz)        
-            sigma = np.zeros(nz)
-            v = - np.ones(nz) * 1e-6  # * coord /(coord[-1])
-            #V = - 1e-7
-            # depth dependence of v
-           # v = V/coord[-1] * coord
-            # stop shrinking for ice volume fractions bigger than 1
-           # phi_max = (0.1-0.9)/coord[-1] * coord +0.9
+            dz = z[1:]-z[:-1]
             phi_max = 1
             restrict =( 1-phi_i/phi_max)
-            v = v * restrict
-            v_cum = np.cumsum(v)
-            dz = coord[1:]-coord[:-1]
-            # Centered Finite Difference second derivative
-            #v_0 = 0 # interpolated velocity below ground also 0 
-            v_dz[1:-1] = (v_cum[2:] - v_cum[:-2])/ (dz[1:] + dz[:-1]) # 2nd order FD scheme
-            v_0 = 0 # interpolated velocity below ground also 0 
-            v_end = - v_cum[-2] + 2 * v_cum[-1]
-            v_dz[0] =  (v_cum[1]-v_0)/ (2*dz[0])
-            v_dz[-1] = (v_end-v_cum[-2])/ (2*dz[-1])    
-            v = v_cum
-
-
-
-
-
-#%% Paramtrization with dependence on phi_i and z        
-#        v_phi = np.ones(nz)
-#        g_z = np.zeros(nz)
-#        g_z_dz = np.zeros(nz)
-#        c_phi = - 5e-7
-#        b_phi = 2*5e-7
-#        a_phi = -0.5 * b_phi
-#        v_phi = a_phi * phi_i**2 + b_phi * phi_i + c_phi
-#
-#        a_z = 1/(-Z_ini**2)
-#        b_z = -2 *a_z * Z_ini 
-#        g_z = a_z * coord**2 + b_z * coord
-#        v = v_phi * g_z
-#        g_z_dz = 2* a_z * coord + b_z
-#        v_dz = v_phi * g_z_dz
-
-
+            D_coeff = -np.ones(nz) * D            
+            D_rate = D_coeff * restrict     # local settling velocity           
+            v[1:] = np.cumsum(D_rate[:-1]* dz[:] )           # total settling velocties (accumulated v_local)
+            v[0] = 0
+            v_dz = D_rate
         
         if plot == 'Y': 
             fig1 = plt.figure(figsize= (6,6))
             f1_ax1 = fig1.add_subplot(1,1,1)
          #   f1_ax1.set_ylim((-5e-7,0))
             f1_ax1.set_xlim((0,0.2))
-            f1_ax1.plot(coord,v , linewidth = 1.5);
-          #  f1_ax1.plot(coord,T, linewidth = 1.5);
-          #  f1_ax1.plot(coord, v , linewidth = 1.5);
+            f1_ax1.plot(z,v , linewidth = 1.5);
+          #  f1_ax1.plot(z,T, linewidth = 1.5);
+          #  f1_ax1.plot(z, v , linewidth = 1.5);
 
             f1_ax1.set_title('Settling velocity $v_i(z)$', fontsize = 20, y =1.04)
             f1_ax1.set_title('Settling Velocity', fontsize = 20, y =1.04)

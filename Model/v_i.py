@@ -35,7 +35,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i
 
-def settling_vel(T,nz,z,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
+def settling_vel(T,nz,z,phi_i,SetVel, v_i_opt ='eta_dependent', plot='N'):
     '''
     computes settling velocity, its spatial derivative and vertical stress
 
@@ -62,10 +62,9 @@ def settling_vel(T,nz,z,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
         sigma = np.zeros(nz)
 
     elif SetVel == 'Y':
-        v = np.ones(nz)    # settlement velocity
         v_dz = np.ones(nz) # local strain rate
 
-        D = 1e-4          # coefficient
+        D = 1e-5          # Deformation rate coefficient e.g. Jerome Johnson 10-3 - 10-6 s-1
         sigma = np.zeros(nz)            
         v = np.zeros(nz)                # local velocity
         D_rate = np.zeros(nz)           # Deformation rate [s-1]
@@ -73,7 +72,8 @@ def settling_vel(T,nz,z,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
 
         if v_i_opt =='eta_dependent':
             dz = np.zeros(nz-1) # layer thickness [m]
-            eta = np.zeros(nz) # snow viscosity 
+            eta = np.zeros(nz) # snow viscosity
+            restrict = np.zeros(nz) 
             sigma_Dz = np.zeros(nz)
     ###### Temperature contolled viscosity
         # eta = eta_0 * rho_i * phi_i/c_eta * np.exp(a_eta *(T_fus - T) + b_eta * rho_i * phi_i)
@@ -81,6 +81,9 @@ def settling_vel(T,nz,z,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
     # ###### Constant viscosity     
     #         if t_passed == 0
             etatest1 = eta_0 * rho_i * 0.16/c_eta * np.exp(a_eta *(T_fus - 263)+ b_eta *rho_i * 0.16) 
+            restrict = np.exp(690 * phi_i -650) +1
+            eta = etatest1/restrict
+
     # ###### Viscosity accoring to Wiese and Schneebeli
     #         else: 
     #             lower = 0.0061 * 0.22 * t_passed **(0.22 - 1)
@@ -94,7 +97,14 @@ def settling_vel(T,nz,z,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
             sigma = sigma0 - sigmacum # Stress from the overlaying layers
             n = 2 #  if n = 2 no squareroot, of n = 1 squareroot, if n = 3 cubic root 
         # Deformation rate
-            D_rate = -1/etatest1 * sigma**(n/2) 
+            for i in range(nz):
+                if eta[i] < etatest1/10:
+                    eta[i] = 0
+                    D_rate[i] = 0
+
+                else:
+                    D_rate[i] = -1/eta[i] * sigma[i]**(n/2) 
+
         # Accumulate velocities so that nodes do not move away from each other
             v[1:] = np.cumsum(D_rate[1:] * dz[:] )
             v[0]  = 0
@@ -111,11 +121,12 @@ def settling_vel(T,nz,z,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
             v_dz = np.zeros(nz)
         elif v_i_opt == 'phi_dependent':
             dz = z[1:]-z[:-1]
-            phi_max = 1
+            #phi_max = (0.4-0.9)/z[-1] *z +0.9
+            phi_max = 0.25
             restrict =( 1-phi_i/phi_max)
             D_coeff = -np.ones(nz) * D            
-            D_rate = D_coeff * restrict     # local settling velocity           
-            v[1:] = np.cumsum(D_rate[:-1]* dz[:] )           # total settling velocties (accumulated v_local)
+            D_rate = D_coeff * restrict          # deformationrate           
+            v[1:] = np.cumsum(D_rate[:-1]* dz[:] )           # local settling velocity
             v[0] = 0
             v_dz = D_rate
         
@@ -128,16 +139,16 @@ def settling_vel(T,nz,z,phi_i,SetVel, v_i_opt ='phi_dependent', plot='N'):
           #  f1_ax1.plot(z,T, linewidth = 1.5);
           #  f1_ax1.plot(z, v , linewidth = 1.5);
 
-            f1_ax1.set_title('Settling velocity $v_i(z)$', fontsize = 20, y =1.04)
+            f1_ax1.set_title('Settling velocity $v(z)$', fontsize = 20, y =1.04)
             f1_ax1.set_title('Settling Velocity', fontsize = 20, y =1.04)
 
             f1_ax1.set_ylabel('Velocity [m/s]', fontsize=15)
-            f1_ax1.set_xlabel('Location in the snowpack [m]',  fontsize=15)
+            f1_ax1.set_xlabel('Height in the snowpack $z$ [m]',  fontsize=15)
             f1_ax1.xaxis.set_tick_params(labelsize = 12)
             f1_ax1.yaxis.set_tick_params(labelsize = 12)
             plt.grid()
             plt.show()
-            fig1.savefig('phi_i(z).png', dpi= 300)
+            fig1.savefig('v(z).png', dpi= 300)
 
         elif plot == 'N':
             pass

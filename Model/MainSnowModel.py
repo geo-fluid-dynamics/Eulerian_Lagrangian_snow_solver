@@ -8,15 +8,15 @@ SetVel        if settling incorporated 'Y' of not 'N'
 Z             total length of domain
 Z_ini         initial Snow Height of the domain
 dz            distance of nodes/ length of one cell
-v_i           settling velocity [m/s]
-v_dz          gradient of v_i in z direction
+v           settling velocity [m/s]
+v_dz          gradient of v in z direction
 iter_max      total number of time steps
 dt            length of one time step [s]
 t_passed      simulation time 
 T             temperature [K]
 T_prev        temperature determined in previous iteration [K]
 rho_eff       effective density of snow #[kg/m^3]
-phi_i         ice volume fraction [-]
+phi         ice volume fraction [-]
 D_eff         effective diffusion coefficient of snow [m^2/s]
 D0            diffusion coefficient_max of water vapor in air [m^2/s]
 k_eff         effective Thermal conductivity of snow [W/m/K]
@@ -45,53 +45,68 @@ from TempGradient import solve_for_grad_T
 from StoreResults import store_results, set_up_matrixes
 from VisualizeResults import visualize_results
 from SolveForC import solve_for_c 
-from RetrievePHI_I import solve_for_phi_i
-from phi_i_from_rho_eff import fractions
+from retrieve_phi import solve_for_phi
+from phi_from_rho_eff import fractions
 from BoundaryCondition import boundary_condition
-from v_i import settling_vel
-import matplotlib.pyplot as plt
+from velocity import settling_vel
+import matplotlib.pyplot as plt 
 
 import numpy as np
 
-def main_snow_model(geom = 1, RHO = 11, TT = 3, SWVD = 'Loewe', SetVel = 'Y'):
+def main_snow_model(geom = 5, RHO = 6, TT = 3, SWVD = 'Loewe', SetVel = 'Y'):
     '''
     main snow model
     '''
     [nz, dz, Z, Z_ini, coord] = set_up_model_geometry(SetVel, geom)
-    [iter_max, dt, t_passed] = set_up_iter(602)
+    [iter_max, dt, t_passed] = set_up_iter(36*24*5+2)  
     [T, rho_eff] = initial_conditions(nz, Z, RHO, TT)
-    T = boundary_condition(T)
-    phi_i = fractions (nz,rho_eff) 
-    [all_D_eff, all_k_eff, all_SC, all_rhoC_eff, all_rho_T, all_T,all_c, all_phi_i,all_grad_T,all_rho_eff,all_coord, all_v_i, all_sigma, all_t_passed,all_dz] = set_up_matrixes(iter_max, nz)
+    mass_flux = []
+
+#    T = boundary_condition(T)
+    phi = fractions (nz,rho_eff) 
+    [all_D_eff, all_k_eff, all_SC, all_rhoC_eff, all_rho_T, all_T,all_c, all_phi,all_grad_T,all_rho_eff,all_coord, all_v, all_sigma, all_t_passed,all_dz] = set_up_matrixes(iter_max, nz)
     SC = np.zeros(nz)
-    c = np.ones(nz) * 1e-4
-    [D_eff, k_eff, rhoC_eff, rho_T, rho_dT] = model_parameters(phi_i, T, Z, nz, coord, SWVD)
-    [v_i, v_dz, sigma] = settling_vel(T,nz,coord,phi_i,SetVel)
+    c = np.ones(nz) *0
+    [D_eff, k_eff, rhoC_eff, rho_T, rho_dT] = model_parameters(phi, T, Z, nz, coord, SWVD)
+    [v, v_dz, sigma] = settling_vel(T, nz, coord, phi, SetVel)
     for t in range(iter_max):
         print(t)
         grad_T = solve_for_grad_T(T, dz, nz)
-        [all_D_eff, all_k_eff, all_SC, all_rhoC_eff, all_rho_T, all_T,all_c,all_phi_i, all_grad_T, all_rho_eff, all_coord, all_v_i, all_sigma, all_t_passed,  all_dz] \
-        =  store_results(all_D_eff, all_k_eff, all_SC, all_rhoC_eff, all_rho_T, all_T, all_c,all_phi_i,all_grad_T, all_rho_eff, all_coord, all_v_i, all_sigma, all_t_passed,all_dz, D_eff, k_eff, SC, phi_i, rhoC_eff, rho_T, T, c, grad_T, rho_eff, coord, v_i, sigma,  t, iter_max, nz,dz,t_passed)
+        [all_D_eff, all_k_eff, all_SC, all_rhoC_eff, all_rho_T, all_T,all_c,all_phi, all_grad_T, all_rho_eff, all_coord, all_v, all_sigma, all_t_passed,  all_dz] \
+        =  store_results(all_D_eff, all_k_eff, all_SC, all_rhoC_eff, all_rho_T, all_T, all_c,all_phi,all_grad_T, all_rho_eff, all_coord, all_v, all_sigma, all_t_passed,all_dz, D_eff, k_eff, SC, phi, rhoC_eff, rho_T, T, c, grad_T, rho_eff, coord, v, sigma,  t, iter_max, nz,dz,t_passed)
         T_prev = T
-       # (T, a, b) = solve_diff_het_implicit(T, rho_T,rho_dT, k_eff, D_eff, rhoC_eff, phi_i, v_i, nz, dt, dz)
-        #c = solve_for_c(T, T_prev, phi_i, k_eff, rhoC_eff, D_eff, rho_T, rho_dT, v_i, nz, dt, dz)
-        (phi_i, coord, Z, dz, v_dz, v_i, sigma) = solve_for_phi_i(T, c, dt, nz, phi_i, v_dz, coord, SetVel)
-        [D_eff, k_eff, rhoC_eff, rho_T, rho_dT] = model_parameters(phi_i, T, Z, nz, coord, SWVD)
+      #  (T, a, b) = solve_diff_het_implicit(T, rho_T,rho_dT, k_eff, D_eff, rhoC_eff, phi, v, nz, dt, dz)
+      #  c = solve_for_c(T, T_prev, phi, k_eff, rhoC_eff, D_eff, rho_T, rho_dT, v, nz, dt, dz)
+        (phi, coord, Z, dz, v_dz, v, sigma) = solve_for_phi(T, c, dt, nz, phi, v_dz, coord, SetVel)
+        [D_eff, k_eff, rhoC_eff, rho_T, rho_dT] = model_parameters(phi, T, Z, nz, coord, SWVD)
         t_passed = t_total(t_passed,dt)
-        #[dt, SC] = comp_dt(t_passed,dz, a,b)
+        # if t_passed > 3600*24*2+2:
+        #     print(t)
+        #     break
+
         dt = 100
-        # plt.plot(phi_i)
-        # plt.pause(0.005)
-    np.savetxt('all_phi_i_c10-4V10-6', all_phi_i)
-    np.savetxt('all_coord_c10-4V10-6', all_coord)
+        #[dt, SC] = comp_dt(t_passed,dz, a,b)
+        mass_flux_dt = c * dt
+        for x in range(len(mass_flux_dt)):
+            if mass_flux_dt[x] >0:
+                mass_flux.append(mass_flux_dt[x])
+
+    # np.savetxt('all_phi_v_eta(phi)', all_phi)
+    # np.savetxt('all_coord_v_eta(phi)', all_coord)
+    # np.savetxt('all_v_v_eta(phi)', all_v)
+    # np.savetxt('all_dz_v_eta(phi)', all_dz)
+    # np.savetxt('all_c_v_eta(phi)', all_c)
+
+    print(sum(mass_flux))
+
 
 ### Visualize results
-    visualize_results(all_T, all_c, all_phi_i, all_grad_T, all_rho_eff, all_SC, all_coord, all_v_i, all_sigma, iter_max, nz, Z, dt, all_dz,all_t_passed,  plot=True)
+    visualize_results(all_T, all_c, all_phi, all_grad_T, all_rho_eff, all_SC, all_coord, all_v, all_sigma, iter_max, nz, Z, dt, all_dz,all_t_passed,  plot=True)
 
     
-    return all_T, all_D_eff, all_SC, all_rho_T, all_k_eff, all_c, all_phi_i, all_grad_T, all_rho_eff, all_coord,all_v_i, all_sigma, all_t_passed, all_dz
+    return all_T, all_D_eff, all_SC, all_rho_T, all_k_eff, all_c, all_phi, all_grad_T, all_rho_eff, all_coord,all_v, all_sigma, all_t_passed, all_dz
 
-all_T, all_D_eff, all_SC, all_rho_T, all_k_eff, all_c, all_phi_i, all_grad_T, all_rho_eff, all_coord, all_v_i, all_sigma, all_t_passed, all_dz= main_snow_model()
+all_T, all_D_eff, all_SC, all_rho_T, all_k_eff, all_c, all_phi, all_grad_T, all_rho_eff, all_coord, all_v, all_sigma, all_t_passed, all_dz= main_snow_model()
     
         
         

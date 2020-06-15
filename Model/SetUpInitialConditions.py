@@ -1,27 +1,33 @@
-"""
-Set up initial conditions
-_______________________________________________
-Snow density rho_eff  
-RHO=1 Homogeneous 
-RHO=2 Ice crust like propose in Hansen
-RHO=3 Gaussian distribution
-RHO=4 Linear profile
-RHO=5 2Layer profile
-RHO=6 Homogeneous - like in Wiese and Schneebeli (2017) 
-
-
-_______________________________________________
-Temperature T
-TT=1 Linear temperature profile, constant gradient
-TT=2 273 initial temperature
-TT=3 263 initial temperature
-TT=4 253 initial temperature
-TT=5 264 initial temperature
-TT=5 264 initial temperature - like in Wiese and Schneebeli (2017)
-"""
 import numpy as np
 def initial_conditions(nz,Z, RHO, TT):
-    
+    '''
+    defines initial conditons for snow density and temperature
+    Arguments:
+    -----------------------------
+    nz: number of nodes
+    Z: height
+    RHO: initial snow density
+    TT: initial temperature
+
+    RHO=1 Homogeneous 
+    RHO=2 Ice crust like propose in Hansen
+    RHO=3 Gaussian distribution
+    RHO=4 Linear profile
+    RHO=5 2Layer profile
+    RHO=6 2Layer profile reflect crocus case
+
+    TT=1 Linear temperature profile, constant gradient
+    TT=2 273 initial temperature
+    TT=3 263 initial temperature
+    TT=4 253 initial temperature
+    TT=5 264 initial temperature
+
+    Returns:
+    ------------------------
+    T: Temperature
+    rho_eff: snow density
+    '''
+    ###%% Temperature 
     if TT == 1:
         def T_ini(nz,Z):
             T= np.zeros(nz+1)
@@ -47,21 +53,14 @@ def initial_conditions(nz,Z, RHO, TT):
             T = np.ones(nz)
             T_ini=253
             T= T* T_ini
-    elif TT == 5:
-        def T_ini(nz,Z):
-            T = np.ones(nz)
-            T_ini= 265.5
-            T= T* T_ini
-
             return T
-
     else :
-        print ('Value error for initial temperature profile')
+        raise ValueError('Value error for initial temperature profile')
 
-    
+    ##% snow density 
     if RHO == 1: # homogeneous case
         def rho_eff(nz,Z):
-            initial = 150
+            initial = 100
             rho_eff = np.ones(nz)
             rho_eff = rho_eff *initial
             return rho_eff
@@ -99,7 +98,7 @@ def initial_conditions(nz,Z, RHO, TT):
                 
             diff1= nz3-nz2
             for i in range(diff1):
-                rho_eff[nz2+i] = (600-240)/diff1 *i + 240
+                rho_eff[nz2+i] = (600-240)/diff1 *i + 240 
     
             rho_eff [nz3:nz4] = 600
                     
@@ -142,17 +141,29 @@ def initial_conditions(nz,Z, RHO, TT):
             rho_eff[nz1] = 275    
             rho_eff[nz1+1:nz2] = 300
             return rho_eff
-    elif RHO ==6: # homogeneous case Experiment (8) from Wiese and Schneebeli (2017)
+
+    elif RHO == 6:
+        # Reflect crocus 
         def rho_eff(nz,Z):
-            x1 = np.int(0.34 * nz )
-            x2 = np.int(0.92 * nz)
             rho_eff = np.ones(nz)
-            rho_eff[0:x1] = 917  # lower 0.01 m ice
-            rho_eff[x1:x2] = 244 # central 0.017 m snow
-            rho_eff[x2:] = 917 # upper 0.002 m ice
+            rho_eff[0] = 150
+            rho_eff[1] = 75
+            rho_eff[2] = 75
+            return rho_eff
+
+    elif RHO == 7:
+        # RHO-i layered
+        def rho_eff(nz,Z):
+
+            rho_eff = np.ones(nz)
+            x1 = 0.5            
+            nz1 = int(x1 * nz)
+            rho_eff[:nz1] = 150 
+            rho_eff[nz1:] = 75
             return rho_eff
                           
+                        
     else :
-        print ('Value error for initial density profile')
+        raise ValueError('Input initial snow density profile')
                          
     return T_ini(nz,Z), rho_eff(nz,Z)

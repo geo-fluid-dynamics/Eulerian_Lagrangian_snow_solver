@@ -13,8 +13,8 @@ def set_up_model_geometry(SetVel, geom=1):
     coord snow height coordinates [m]
     """
     if geom ==1: # homogeneous case
-        Z = 0.2 # m
-        Z_ini = 0.2
+        Z = 0.5 # m
+        Z_ini = 0.5
         nc = 100
         nz = nc +1  # number of nodes
         coord = np.linspace(0,Z_ini,nz)
@@ -36,9 +36,23 @@ def set_up_model_geometry(SetVel, geom=1):
         nc = 58
         nz = nc +1  # number of nodes
         coord = np.linspace(0,Z_ini,nz)
+        
+    elif geom ==5: # Crocus geometry
+        Z = 0.5 # m
+        Z_ini = 0.5
+        nc = 2
+        nz = nc +1  # number of nodes
+        coord = np.linspace(0,Z_ini,nz)
+        
+    elif geom ==6: # for comparison with crocus velocity
+        Z = 0.5 # m
+        Z_ini = 0.5
+        nc = 100
+        nz = nc +1  # number of nodes
+        coord = np.linspace(0,Z_ini,nz)
 
     else:
-        print ('Requested geometry not available')
+        raise ValueError('Requested geometry not available')
 
     if SetVel =='N':
         dz = np.ones(nc) * Z/nc # m cellsize/ node distance
@@ -47,7 +61,7 @@ def set_up_model_geometry(SetVel, geom=1):
         dz = np.zeros(nz-1)
         dz = coord[1:] - coord[:-1]
     else:
-        print ('Requested method for settling velocity is not available')
+        raise ValueError ('Requested method for settling velocity is not available')
 
         
     return nz, dz, Z, Z_ini, coord

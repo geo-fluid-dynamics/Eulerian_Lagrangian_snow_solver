@@ -120,7 +120,7 @@ def solve_diff_het_implicit(u, rho_T,rho_dT, k_eff, D_eff, rhoC_eff, phi_i, v_i,
      FD_error = np.dot(E,u)
      b = b - FD_error    
      
-#%% Set up matrix C - accunting for settling velocity
+#%% Set up matrix C - account for settling velocity
      vphi = phi_i*v_i     
      r = L* rho_T[1:-1]/((dz[1:]+dz[:-1]))
      main_C[0] = 2 *rho_T[0] / (2 * dz[0])

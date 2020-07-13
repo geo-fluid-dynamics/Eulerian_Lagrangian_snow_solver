@@ -2,7 +2,7 @@ import numpy as np
 from SatVapDens import Sat_Vap_Dens
 from ConstantVariables import D0, k_i, k_a, rho_a, rho_i,C_i, C_a, ka0, ka1, ka2
 
-def model_parameters(phi_i,T,Z, nz,coord, SWVD, form = 'Hansen'):
+def model_parameters(phi_i,T, nz,coord, SWVD, form = 'Loewe'):
     """
     Computes model effective parameters 
     
@@ -10,7 +10,6 @@ def model_parameters(phi_i,T,Z, nz,coord, SWVD, form = 'Hansen'):
     ---------
     phi_i: Ice volume fraction
     T:     Temperature [K]
-    Z:     total height of the snowpack
     nz:    number of computational nodes
     coord: coordinates of the computational nodes
     SWVD:  decide between three different equations for saturation water vapor density : 'Loewe', 'Hansen', 'Calonne'

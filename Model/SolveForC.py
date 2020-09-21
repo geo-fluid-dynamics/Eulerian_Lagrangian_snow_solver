@@ -1,6 +1,7 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-def solve_for_c(T, T_prev, phi_i, k_eff, rhoC_eff, D_eff, rho_T, rho_dT, v_i, nz, dt, dz):
+def solve_for_c(T, T_prev, phi_i, k_eff, rhoC_eff, D_eff, rho_T, rho_dT, v_i,v_dz, nz, dt, dz, t):
     """
     Computes condensation rate c [kg/m^3/s]
     EQU : 72 from Hansen -> c = d/dz(D_eff * rho_dT dT/dz) - (1-phi_i) *rho_dT * dT/dt [- rho_v^eq * nabla (phi_i * v_i)] <- last term in square brackets results from incorporation of settling velocity
@@ -88,22 +89,30 @@ def solve_for_c(T, T_prev, phi_i, k_eff, rhoC_eff, D_eff, rho_T, rho_dT, v_i, nz
 
 # %% Grid-Error Trm from FD Scheme nonuniform grid 
  ### Matrixwise
-    factor_dz = (dz[1:]-dz[:-1]) /  (dz[1:]+ dz[:-1]) / (((dz[1:]**2 + dz[:-1]**2)/2))
+    factor_dz = 2*(dz[1:]-dz[:-1]) /  (dz[1:]+ dz[:-1]) / ((dz[1:]**2 + dz[:-1]**2))
     beta_left = (0.5 *(beta[2:] + beta[1:-1]))
     beta_right = (0.5 * (beta[1:-1] + beta [:-2]))
     
-    main_E[1:-1]  =( factor_dz * beta_right- factor_dz * beta_left ) 
+    main_E[1:-1] = ( factor_dz * beta_right- factor_dz * beta_left ) 
     lower_E[:-1] = -factor_dz * beta_right
     upper_E[1:] = factor_dz * beta_left
+    # main_E[1:-1]  = (factor_dz * beta_right- factor_dz * beta_left ) 
+    # lower_E[1:-1]  = -factor_dz[:-1] * beta_right[:-1]
+    # lower_E[-1] = lower_E[-2]
+    # lower_E[0] = lower_E[1]
+    # upper_E[1:-1]   =  factor_dz[1:] * beta_left[1:]
+    # upper_E[0] = upper_E[1]
+    # upper_E[-1] = upper_E[-2]
     
     E = np.diag(np.ones(nz)*(main_E),k=0) +np.diag(np.ones(nz-1)*(lower_E),k=-1) + np.diag(np.ones(nz-1)*(upper_E),k=1) 
     FD_error = np.dot(E,T)
-    c = c + FD_error 
+    c = c - FD_error 
+    
 
 #%% Term from settling velocity p_v^eq *d/dz (phi_i v_i)
    
     vphi = phi_i*v_i     
-    r = rho_T[1:-1]/((dz[1:]+dz[:-1]))
+    r    = rho_T[1:-1]/((dz[1:]+dz[:-1]))
     main_F[1:-1] = 0
     main_F[0] = 2 *rho_T[0] / (2 * dz[0])
     main_F[-1] =  - rho_T[-1] / ( 2* dz[-1])
@@ -114,6 +123,18 @@ def solve_for_c(T, T_prev, phi_i, k_eff, rhoC_eff, D_eff, rho_T, rho_dT, v_i, nz
 
     F = np.diag(np.ones(nz)*(main_F),k=0 )+np.diag(np.ones(nz-1)*(lower_F),k=-1) + np.diag(np.ones(nz-1)*(upper_F),k=1) 
     velterm = np.dot(F, vphi)
+
+#     phi_dz = np.zeros_like(phi_i)
+#     dz_1 = np.zeros_like(phi_i)
+#     phi_1= np.zeros_like(phi_i)
+#     dz_1[1:-1] = dz[1:]+dz[:-1]
+#     dz_1[0] = dz_1[1]
+#     dz_1[-1] = dz_1[-2]
+#     phi_1[0:-1] = phi_i[1:] - phi_i[:-1]
+#     phi_1[-1] = phi_1[-2]
+#     phi_dz[:] = phi_1 /dz_1
+#     velterm= rho_T *( phi_dz *v_i +v_dz * phi_i)
+#    velterm_diff = velterm - velterm_1
     c = c - velterm
    
     return c

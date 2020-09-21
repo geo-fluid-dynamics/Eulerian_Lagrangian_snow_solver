@@ -26,9 +26,9 @@ def choose_geometry(geom):
     Select test cases at initiation 
     Arguments: 
     ----------------------------
-    'FieldScale0.5m'
-    'LabScale0.02m'
-    'Crocus0.5m_2Layer'
+    'FieldScale0.5m' - continuous
+    'LabScale0.02m' 
+    'Crocus0.5m_2Layer' - 3 computational nodes
 
     Results:
     -----------------------------

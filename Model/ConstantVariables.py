@@ -22,7 +22,7 @@ f = 461.31
 rho_ref = 2.173e-3 #[kg/m^3] reference density
 T_ref_C = 273 #[K] reference temperature
 
-#### L�we k_eff formula
+#### Löwe k_eff formula
 ka0 = 0.024
 ka1 = -1.23e-4
 ka2 = 2.5e-6

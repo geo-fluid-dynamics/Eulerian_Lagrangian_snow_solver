@@ -17,6 +17,9 @@ def coupled_update_phi_coord(T, c, dt, nz, phi, v_dz, coord, SetVel, v_opt, visc
     v_dz       derivative w.r.t. z of settling velocity from previous time step [1/s]
     coord      z-coordinates [m]
     SetVel     'Y' 'N' settling active or inactive
+    v_opt       method for velocity computation
+    viscosity   method for viscosity computation
+
 
     Results:
     -------------------------------------
@@ -37,6 +40,19 @@ def coupled_update_phi_coord(T, c, dt, nz, phi, v_dz, coord, SetVel, v_opt, visc
 def update_phi(c, dt, nz, phi, v_dz, coord):
     '''
     update ice volume fraction phi
+
+    Arguments
+    -----------------
+    c       deposition rate
+    dt      time step
+    nz      number of computational nodes
+    phi     ice volume fraction old
+    v_dz    derivative of settling velocity
+    coord   mesh coordinates
+
+    Returns
+    -------------------
+    phi_new updated ice volume fraction
     '''
     if np.max(phi) > 1:
         raise ValueError('Ice volume fraction higher than 1')
@@ -47,6 +63,25 @@ def update_phi(c, dt, nz, phi, v_dz, coord):
 def update_coord(T, c, dt, nz, phi, coord, SetVel, v_opt, viscosity ):
     '''
     update coordinate system or computational nodes
+
+    Arguments
+    ------------------
+    T           Temperature
+    c           deposition rate
+    dt          time step
+    nz          number of computational nodes
+    phi         ice volumefraction old
+    SetVel      settling velocity active or not 'Y' or 'N'
+    v_opt       method for settling velocity computationa
+    viscosity   method for viscosity computation
+
+    Returns
+    -------------------
+    coord_new   updated coordinates
+    dz          node distance
+    v_dz_new    updated derivative of velocity
+    v           velocity
+    sigma       stress from overburdened snow mass
     '''
     (v, v_dz_new, sigma) = settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity)
     coord_new = coord + dt * v                     

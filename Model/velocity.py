@@ -49,7 +49,7 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity, plot=False):
         elif v_opt == 'const':
                 v = - np.ones(nz) * D
                 v_dz = np.zeros(nz)
-        elif v_opt == 'phi_dependent':
+        elif v_opt == 'phi_dependent':    # firn models
                 dz = nodedistance(coord, nz)
                 phi_max = (0.4-0.9)/coord[-1] *coord +0.9 # 0.25
                 restrict =( 1-phi/phi_max)
@@ -137,7 +137,7 @@ def sigma_cont_croc(dz, phi, nz, v_opt):
                 raise ValueError('Pressure is not monotonically increasing')
         return sigma
 
-def velocity(sigma, eta, dz, nz, n=2):
+def velocity(sigma, eta, dz, nz, n=3):
         '''
         computes velocity
 
@@ -156,10 +156,10 @@ def velocity(sigma, eta, dz, nz, n=2):
         '''
         v = np.zeros(nz)                                # local velocity
         v_dz = np.ones(nz)                              # local strain rate
-        D_rate = np.zeros(nz)                           # Deformation rate [s-1]
-        D_rate= -1/eta * sigma*(n/2)                    # Deformation rate, I don't set D_rate[0]=0 so v_dz[0] also not 0, because then the the ice volume of the lowest node would not grow further
-        v_dz = D_rate.copy()                            # save D_rate with D_rate[0] not 0 to ensure that the ice volume of the lowest node can still grow in retrieve_phi routine
-        D_rate[0] = 0                                   # Deformation rate at lowest node = 0
+        D_rate = np.zeros(nz)                           # strain rate [s-1]
+        D_rate= -1/eta * sigma**(1/n)                   # strain rate, I don't set D_rate[0]=0 so v_dz[0] also not 0, because then the the ice volume of the lowest node would not grow further
+        v_dz = D_rate.copy()                            # save strain rate with D_rate[0] not 0 to ensure that the ice volume of the lowest node can still grow in retrieve_phi routine
+        D_rate[0] = 0                                   # strain rate at lowest node = 0
         v[0] = D_rate[0] *dz[0]
         v[1:] = np.cumsum(D_rate[1:] * dz[:] )          # Integrate deformation rates in space
         return v, v_dz
@@ -170,11 +170,8 @@ def plot_velocity(z,v):
         z = z /100
         f1_ax1 = fig1.add_subplot(1,1,1)
         f1_ax1.plot(z,v , linewidth = 1.5)
-
-
         f1_ax1.set_title('Settling velocity $v(z)$', fontsize = 20, y =1.04)
         f1_ax1.set_title('Settling Velocity', fontsize = 20, y =1.04)
-
         f1_ax1.set_ylabel('Velocity [cm/d]', fontsize=15)
         f1_ax1.set_xlabel('Height in the snowpack $z$ [cm]',  fontsize=15)
         f1_ax1.xaxis.set_tick_params(labelsize = 12)

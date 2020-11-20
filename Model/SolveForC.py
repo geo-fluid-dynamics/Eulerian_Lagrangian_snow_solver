@@ -51,7 +51,6 @@ def solve_for_c(T, T_prev, phi, k_eff, rhoC_eff, D_eff, rho_v, rho_v_dT, v,v_dz,
     velterm = np.zeros(nz)
     vphi = np.zeros(nz)
     r = np.zeros(nz)
-
    
 # Variables
     beta = D_eff*rho_v_dT
@@ -64,7 +63,7 @@ def solve_for_c(T, T_prev, phi, k_eff, rhoC_eff, D_eff, rho_v, rho_v_dT, v,v_dz,
     # Insert entries for boundary nodes
     lower_H[-1] = 0 
     upper_H[0] =  0
-    main_H[0] =  -a[0] 
+    main_H[0] = -a[0] 
     main_H[-1] = -a[-1]   
     H = np.diag(np.ones(nz)*(main_H),k=0) +np.diag(np.ones(nz-1)*(lower_H),k=-1) + np.diag(np.ones(nz-1)*(upper_H),k=1)
 
@@ -76,37 +75,34 @@ def solve_for_c(T, T_prev, phi, k_eff, rhoC_eff, D_eff, rho_v, rho_v_dT, v,v_dz,
 #Compute c 
     part1 = np.dot(H,T)             
     part2 = np.dot(G,T_prev)
-    c = part1 + part2
+    c = part1 + part2 #+
 
 # %% Grid-Error Trm from FD Scheme nonuniform grid 
  ### Matrixwise
     factor_dz = 2*(dz[1:]-dz[:-1]) /  (dz[1:]+ dz[:-1]) / ((dz[1:]**2 + dz[:-1]**2))
+    #factor_dz = (dz[1:]-dz[:-1]) /  (dz[1:]+ dz[:-1]) / (((dz[1:]**2 + dz[:-1]**2)/2))
     beta_left = (0.5 *(beta[2:] + beta[1:-1]))
     beta_right = (0.5 * (beta[1:-1] + beta [:-2]))
-    
     main_E[1:-1] = ( factor_dz * beta_right- factor_dz * beta_left ) 
     lower_E[:-1] = -factor_dz * beta_right
-    upper_E[1:] = factor_dz * beta_left    
+    upper_E[1:] =  factor_dz * beta_left    
     E = np.diag(np.ones(nz)*(main_E),k=0) +np.diag(np.ones(nz-1)*(lower_E),k=-1) + np.diag(np.ones(nz-1)*(upper_E),k=1) 
     FD_error = np.dot(E,T)
     c = c - FD_error 
     
-
-#%% Term from settling velocity p_v^eq *d/dz (phi v)
-   
-    vphi = phi*v     
-    r    = rho_v[1:-1]/((dz[1:]+dz[:-1]))
-    main_F[1:-1] = 0
-    main_F[0] = 2 *rho_v[0] / (2 * dz[0])
-    main_F[-1] =  - rho_v[-1] / ( 2* dz[-1])
-    upper_F[1:] = -r
-    lower_F[:-1] = r
-    upper_F[0] = -1 *rho_v[0] / (2 * dz[0])
-    lower_F[-1] = 2 * rho_v[-1] / ( 2* dz[-1])
-
-    F = np.diag(np.ones(nz)*(main_F),k=0 )+np.diag(np.ones(nz-1)*(lower_F),k=-1) + np.diag(np.ones(nz-1)*(upper_F),k=1) 
-    velterm = np.dot(F, vphi)
-    c = c - velterm
+#%% Term from settling velocity p_v^eq *d/dz (phi v) 
+    # vphi = phi*v     
+    # r    = rho_v[1:-1]/((dz[1:]+dz[:-1]))
+    # main_F[1:-1] = 0
+    # main_F[0] = rho_v[0] /  dz[0]
+    # main_F[-1] =  - rho_v[-1] / ( 2* dz[-1])
+    # upper_F[1:] = -r
+    # lower_F[:-1] = r
+    # upper_F[0] = -rho_v[0] / (2 * dz[0])
+    # lower_F[-1] =  rho_v[-1] / (  dz[-1])
+    # F = np.diag(np.ones(nz)*(main_F),k=0 )+np.diag(np.ones(nz-1)*(lower_F),k=-1) + np.diag(np.ones(nz-1)*(upper_F),k=1) 
+    # velterm = np.dot(F, vphi)
+    # c = c - velterm
    
     return c
 

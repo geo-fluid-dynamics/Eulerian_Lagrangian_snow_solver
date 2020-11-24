@@ -1,33 +1,33 @@
 ## constant values for the computation provided by Calonne(2014a)
-rho_i = 917 #kg/m^3 
-rho_a = 1.335 # dry air density 
-L_Cal =  2.6e9 # J/m^3
-L= 0 # L_Cal/rho_i
+rho_i = 917         #kg/m^3 
+rho_a = 1.335       # dry air density 
+L_Cal =  2.6e9      # J/m^3
+L=  L_Cal/rho_i            # L_Cal/rho_i J/kg
 mH2O = 2.991507e-26 #kg
 kB = 1.38e-23 #J/K
 D0 = 2.036e-5 # m^2s
-k_a =  0.024#W/m/K ar 1 bar 0 �C of dry air
-k_i = 2.3 # W/m/K at 1bar and 0 � C and 1 atm
+k_a =  0.024 #W/m/K
+k_i = 2.3 # W/m/K  
 C_a = 1005 # J/kg/K of dry air 
 C_i = 2000 # J/kg/K  of ice
 
-### L�we SatVapDens
+### Libbrecht (1999) Saturation Water Vapor Density
 T_ref_L = 6150 # [K] reference temperature
 a0 = 3.6636e12
 a1 = -1.3086e8
 a2 = -3.3793e6
 f = 461.31
 
-### Calonne SatVapDens
+### Calonne (2014) Saturation Water Vapor Density
 rho_ref = 2.173e-3 #[kg/m^3] reference density
 T_ref_C = 273 #[K] reference temperature
 
-#### Löwe k_eff formula
+#### Calonne (2011) k_eff formula
 ka0 = 0.024
 ka1 = -1.23e-4
 ka2 = 2.5e-6
 
-### Hansen SatVapDens
+### Hansen and Foslien (2015) Saturation Water Vapor Density
 c1 = -2445.5646
 c2 = 8.2312
 c3 = -1.667006e-2

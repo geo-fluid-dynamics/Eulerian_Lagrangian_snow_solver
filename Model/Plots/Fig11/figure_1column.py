@@ -1,0 +1,9 @@
+figsize_1c = (19,16)
+linewidth_1c = 10
+labelpad_1c = 30
+fontsize_1c = 70
+length_1c = 15
+width_1c = 7
+pad_1c = 25
+labelsize_1c = 70
+fontsize_legend_1c = 60

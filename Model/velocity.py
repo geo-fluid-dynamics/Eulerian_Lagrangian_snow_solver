@@ -157,7 +157,7 @@ def velocity(sigma, eta, dz, nz, n=3):
         v = np.zeros(nz)                                # local velocity
         v_dz = np.ones(nz)                              # local strain rate
         D_rate = np.zeros(nz)                           # strain rate [s-1]
-        D_rate= -1/eta * sigma**(1/n)                   # strain rate, I don't set D_rate[0]=0 so v_dz[0] also not 0, because then the the ice volume of the lowest node would not grow further
+        D_rate= -1/(eta*100000) * sigma**(n)            # strain rate, I don't set D_rate[0]=0 so v_dz[0] also not 0, because then the the ice volume of the lowest node would not grow further
         v_dz = D_rate.copy()                            # save strain rate with D_rate[0] not 0 to ensure that the ice volume of the lowest node can still grow in retrieve_phi routine
         D_rate[0] = 0                                   # strain rate at lowest node = 0
         v[0] = D_rate[0] *dz[0]

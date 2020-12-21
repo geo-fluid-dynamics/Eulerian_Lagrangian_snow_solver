@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from ModelGeometry import nodedistance
-from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i
+from phi_from_rho_eff import fractions
+from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i, Z_max, D_rate, rho_i_average, Z_max, pl1, pl2
 
 def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity, plot=False):
     '''
@@ -10,7 +11,7 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity, plot=False):
     Arguments
     -------------
     T: Temperature [K]
-    nz:  number of computational nodes
+    nz:  number of computational nodes [-]
     z: coordinates of computational nodes in the snowpack [m]
     phi: ice volume fraction [-]
     SetVel: settling active: 'Y'; settling inactive: 'N'
@@ -22,38 +23,47 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity, plot=False):
     v_dz: spatial derivative of the settling velocity
     sigma: vertical stress at each computational node in the snowpack
     '''
+    from ConstantVariables import D_rate
+    dz = nodedistance(coord, nz)
     if SetVel == 'N':
-        v = np.zeros(nz)
-        v_dz = np.zeros(nz)
-        sigma = np.zeros(nz)
+        v = np.zeros(nz)                       # [m s-1]
+        v_dz = np.zeros(nz)                    # [s-1]
+        sigma = sigma_cont_croc(dz,phi,nz, v_opt)          # [Pa m-2]
     elif SetVel == 'Y':
         D_coeff = np.zeros(nz)                          # Deformation rate coefficient [s-1]
-        D = 1e-5                                        # Deformation rate coefficient e.g. Jerome Johnson 10-3 - 10-6 s-1
+
         if v_opt =='continuous':
-                dz = nodedistance(coord, nz)
+                # many computational nodes approx. continuous 
                 eta = choose_viscosity(T, phi, viscosity)
                 sigma = sigma_cont_croc(dz,phi,nz, v_opt)
                 (v,v_dz) = velocity(sigma, eta, dz,nz)      
-        elif v_opt == 'crocus':                         # 2 layer case with 3 computational nodes
+        elif v_opt == 'layer_based':                         
+                # 2 layer case with 3 computational nodes
                 if nz is not 3:
-                        raise IndexError('For crocus velocity only 3 computational nodes are allowed')
-                dz = nodedistance(coord, nz)
-                eta = choose_viscosity(T, phi,viscosity)
+                        raise IndexError('For layer_based velocity only 3 computational nodes are allowed')
+                eta = choose_viscosity( T, phi,viscosity)
                 sigma = sigma_cont_croc(dz,phi,nz, v_opt)
                 (v,v_dz) = velocity(sigma, eta, dz,nz)
         elif v_opt == 'polynom':
-                D_coeff = - np.ones(nz) * D             # deformation rate coefficient 
-                D_rate = D_coeff                        # [1/s] Deformation rate
+                # linearly increasing with snow height
+                sigma = sigma_cont_croc(dz,phi,nz, v_opt)
+
+                D_coeff = - np.ones(nz) * D_rate             # deformation rate coefficient 
+                D_rate = D_coeff                       # [1/s] Deformation rate
                 v = D_rate * coord                      # [m/s] settlement velocity
                 v_dz = D_rate
         elif v_opt == 'const':
-                v = - np.ones(nz) * D
+                # spatially constant settling velocity
+                v = - np.ones(nz) * D_rate
                 v_dz = np.zeros(nz)
-        elif v_opt == 'phi_dependent':    # firn models
-                dz = nodedistance(coord, nz)
+                sigma = sigma_cont_croc(dz,phi,nz, v_opt)
+        elif v_opt == 'phi_dependent':    
+                # as found in firn models
+                v = np.zeros(nz)                       # [m s-1]
+                sigma = sigma_cont_croc(dz,phi,nz, v_opt)
                 phi_max = (0.4-0.9)/coord[-1] *coord +0.9 # 0.25
                 restrict =( 1-phi/phi_max)
-                D_coeff = -np.ones(nz) * D            
+                D_coeff = -np.ones(nz) * D_rate            
                 D_rate = D_coeff * restrict             # deformationrate           
                 v_dz = D_rate.copy()
                 D_rate[0] = 0                           # Deformation rate at bottom = 0
@@ -71,34 +81,41 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity, plot=False):
                 
     return v, v_dz, sigma
             
-def choose_viscosity(T, phi, viscosity):
+def choose_viscosity( T, phi, viscosity):
         '''
         computes snow viscosity for snow based on a viscosity formulation from Vionnet et al. (2012)
         
-        Arguments
+        Arguments:
         ------------------
-        T               Temperature
-        phi             Ice volume fraction
-        viscosity       option how to determine viscosity
-                        'eta_constant', 'eta_phi', 'eta_T', 'eta_phiT'
+        T               Temperature [K]
+        phi             Ice volume fraction [-]
+        viscosity       option how to determine viscosity 
+                        'eta_constant_n1', 'eta_constant_n3 'eta_phi', 'eta_T', 'eta_phiT'
 
-        Returns
+        Returns:
         -------------------
-        eta             viscosity
+        eta             viscosity [Pa s]
         '''
         T_const = 263
         phi_const = 0.1125
         eta = np.zeros_like(T)
-        if viscosity == 'eta_constant':   # T = T_const ,phi = phi_const 
+        restrict = np.exp(pl1 * phi -pl2) +1 # power law to restrict ice volume growth to <0.95 
+        if viscosity == 'eta_constant_n1':   
+                # constant viscosity for linear stress strain relation, Glen's flow law n=1
                 etatest1 = eta_0 * rho_i * phi_const/c_eta * np.exp(a_eta *(T_fus - T_const)+ b_eta *rho_i * phi_const) 
-                restrict = np.exp(690 * phi -650) +1 # power law to restrict ice volume growth tp <0.95 
-                eta = etatest1 *restrict
+                # apply power law to restrict ice volume growth tp <0.95 
+                eta = etatest1 * restrict
         elif viscosity == 'eta_phi': # visocosity controlled by ice volume fraction
                 eta = eta_0 * rho_i * phi/c_eta * np.exp(a_eta * (T_fus - T_const) + b_eta * rho_i * phi)
         elif viscosity == 'eta_T': # visocosity controlled by temperature
                 eta = eta_0 * rho_i * phi_const/c_eta * np.exp(a_eta * (T_fus - T) + b_eta * rho_i * phi_const)
         elif viscosity == 'eta_phiT':  # visocosity controlled by ice volume fraction and temperature
                 eta  = eta_0 * rho_i * phi/c_eta * np.exp(a_eta * (T_fus - T) + b_eta * rho_i * phi)
+        elif viscosity == 'eta_constant_n3':  
+                # non-linear stress strain rate relation, Glens flow law n=3
+                sigma = phi_const* Z_max * rho_i * g 
+                eta1 = 1/D_rate * sigma **3
+                eta = eta1 * restrict 
         else:
                 raise ValueError('Option for viscosity computation not available')
         return eta
@@ -109,27 +126,30 @@ def sigma_cont_croc(dz, phi, nz, v_opt):
 
         Arguments
         -----------------------
-        dz              node distance
-        phi             ice volume fraction
-        nz              number of computational nodes
-        v_opt           method for velocity computation
+        dz              node distance [m]
+        phi             ice volume fraction  [-]
+        nz              number of computational nodes [-]
+        v_opt           method for velocity computation 
+
+        Returns:
+        ------------------------
+        sigma          vertical stress [kg m-1 s-2]
         '''
         sigma = np.zeros(nz)
         sigma_Dz = np.zeros(nz)
         sigma_Dz[:-1] =  g * phi[:-1] * rho_i * dz[:]
-        if v_opt == 'crocus': # velocity computed based on layer-based concept, so with 3 computational nodes for the two layer case
+        if v_opt == 'layer_based': 
+                # velocity computed based on layer-based concept, so with 3 computational nodes for the two layer case
                 sigma_Dz[-1] = sigma_Dz[1]/2            # pressure at highest node half of the node below
                 sigma[0] = np.sum(sigma_Dz)             # lowest node: sum of pressure above
                 sigma[1] = sum(sigma_Dz[1:])            # center node:  sum of pressure above 
                 sigma[-1] =sigma_Dz[-1] 
-        elif v_opt == 'continuous': # velocity computed based on our approach 
-                sigma_Dz[-1] = 0 #  g * phi[-1] * rho_i * dz[-1] 
+        else: 
+                # velocity computed based on our approach 
+                sigma_Dz[-1] = 0 #  no stress at heighest node, interface with atmosphere, no overburdened snow mass
                 sigma = np.cumsum(sigma_Dz[::-1])       # cumulative sum of stress from top to bottom
-                sigma = sigma [::-1]                    # sigma reversed
-                # sigma0 = np.ones(nz) * sigmacum[-1]     # vector with all elements equal to stress at the bottom
-                # sigma = sigma0 - sigmacum               # stress at all respective heights
-        else:
-                raise ValueError('v_opt not available')
+                sigma = sigma [::-1]                    # sigma reversed -> local stress at each computational node
+
         dx = np.diff(sigma)
         if np.all(dx <= 0) or np.all(dx >= 0): 
                 pass
@@ -137,37 +157,38 @@ def sigma_cont_croc(dz, phi, nz, v_opt):
                 raise ValueError('Pressure is not monotonically increasing')
         return sigma
 
-def velocity(sigma, eta, dz, nz, n=3):
+def velocity(sigma, eta, dz, nz, n=1):
         '''
         computes velocity
 
         Arguments
         ------------------
-        sigma           vertical stress from the overburdened snowmass
-        eta             snow visocisty
-        dz              node distance
-        nz              number of computational nodes
-        n               coefficient for deformation rate (D_rate)
+        sigma           vertical stress from the overburdened snowmass  [N m-2]
+        eta             snow viscosity [Pa s]
+        dz              node distance [m]
+        nz              number of computational nodes [-]
+        n               coefficient for deformation rate (D_rate) [-] n=1 : linear stress strain rate relation ; n=3 non-linear stress strain rate relation
 
-        Retruns
+        Returns
         ----------------------------
-        v               velocity
-        v_dz            derivative of velocity equivalent to deformation rate
+        v               velocity m/s
+        v_dz            derivative of velocity, equivalent to deformation rate 1/s
         '''
-        v = np.zeros(nz)                                # local velocity
+        v = np.zeros(nz)                                # local velocity [m s-1]
         v_dz = np.ones(nz)                              # local strain rate
         D_rate = np.zeros(nz)                           # strain rate [s-1]
-        D_rate= -1/(eta*100000) * sigma**(n)            # strain rate, I don't set D_rate[0]=0 so v_dz[0] also not 0, because then the the ice volume of the lowest node would not grow further
+        D_rate= -1/(eta) * sigma**(n)                   # strain rate, [s-1] Eq. (5) in Vionnet at el. (2012) : dD/(D*dt) = -1/(eta) * sigma**(n), n=1
         v_dz = D_rate.copy()                            # save strain rate with D_rate[0] not 0 to ensure that the ice volume of the lowest node can still grow in retrieve_phi routine
         D_rate[0] = 0                                   # strain rate at lowest node = 0
-        v[0] = D_rate[0] *dz[0]
-        v[1:] = np.cumsum(D_rate[1:] * dz[:] )          # Integrate deformation rates in space
+        v[0] = D_rate[0] *dz[0]                         # [m s-1]
+        v[1:] = np.cumsum(D_rate[1:] * dz[:] )          # Integrate deformation rates [s-1] in space to derive velocity [m s-1]
         return v, v_dz
 
 def plot_velocity(z,v):
+        #plots velocity for each time step
         fig1 = plt.figure(figsize= (6,6))
-        v = v *3600*24/100
-        z = z /100
+        v = v *3600*24/100              # velocity [cmd-1]
+        z = z /100  # height coordinates [cm]
         f1_ax1 = fig1.add_subplot(1,1,1)
         f1_ax1.plot(z,v , linewidth = 1.5)
         f1_ax1.set_title('Settling velocity $v(z)$', fontsize = 20, y =1.04)

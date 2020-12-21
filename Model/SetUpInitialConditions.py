@@ -74,7 +74,7 @@ def initial_conditions(nz,Z, RHO_ini, T_ini):
         rho_eff[nz1] = 112.5
         rho_eff[nz1+1] = 93.75
         rho_eff[nz1+2:nz2] = 75
-    elif RHO_ini == 'RHO_2Layer_Crocus':
+    elif RHO_ini == 'RHO_2Layer_layer_based':
         rho_eff = np.ones(nz)
         rho_eff[0] = 150
         rho_eff[1] = 75

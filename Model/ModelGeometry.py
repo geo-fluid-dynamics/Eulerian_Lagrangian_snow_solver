@@ -1,4 +1,5 @@
 import numpy as np
+from ConstantVariables import Z_field, Z_lab
 
 def set_up_model_geometry(geom='FieldScale0.5m'):
     """
@@ -14,8 +15,8 @@ def set_up_model_geometry(geom='FieldScale0.5m'):
     dz    cellsize[m]
     coord snow height coordinates [m]
     """
-    if geom not in ['FieldScale0.5m','LabScale0.02m','Crocus0.5m_2Layer']:
-        raise TypeError ('The option for geom can only be: FieldScale0.5m, LabScale0.02m, Crocus0.5m_2Layer')
+    if geom not in ['FieldScale0.5m','LabScale0.02m','layer_based0.5m_2Layer']:
+        raise TypeError ('The option for geom can only be: FieldScale0.5m, LabScale0.02m, layer_based0.5m_2Layer')
     
     [nz, Z, coord] = choose_geometry(geom)
     dz = nodedistance(coord,nz)      
@@ -23,33 +24,33 @@ def set_up_model_geometry(geom='FieldScale0.5m'):
 
 def choose_geometry(geom):
     '''
-    Select test cases at initiation 
-    Arguments: 
+    Select  geometry of the test cases at initiation 
+    Arguments
     ----------------------------
-    'FieldScale0.5m' - continuous
-    'LabScale0.02m' 
-    'Crocus0.5m_2Layer' - 3 computational nodes
+    'FieldScale0.5m' - 101 nodes or 251
+    'LabScale0.02m'  - represents the lab sace 
+    'layer_based0.5m_2Layer' - 3 computational nodes to reflect layer-based schemes
 
-    Results:
+    Results
     -----------------------------
     nz      number of computational nodes
     Z       initial height of the snowpack
     coord   initial z-coordinates
     '''
-    if geom not in ['FieldScale0.5m','LabScale0.02m','Crocus0.5m_2Layer']:
-        raise TypeError ('The option for geom can only be: FieldScale0.5m, LabScale0.02m, Crocus0.5m_2Layer')
+    if geom not in ['FieldScale0.5m','LabScale0.02m','layer_based0.5m_2Layer']:
+        raise TypeError ('The option for geom can only be: FieldScale0.5m, LabScale0.02m, layer_based0.5m_2Layer')
     if geom =='FieldScale0.5m': 
-        Z = 0.5 # m
-        nc = 100
+        Z = Z_field # height[m]
+        nc = 100  # or 250
         nz = nc +1  # number of nodes
-        coord = np.linspace(0,Z,nz)
+        coord = np.linspace(0,Z,nz) # [m]
     elif geom =='LabScale0.02m':
-        Z = 0.02 # m
+        Z = Z_lab # height [m]
         nc = 100
         nz = nc +1  # number of nodes
-        coord = np.linspace(0,Z,nz)       
-    elif geom =='Crocus0.5m_2Layer':
-        Z = 0.5 # m
+        coord = np.linspace(0,Z,nz) # [m]      
+    elif geom =='layer_based0.5m_2Layer':  # do not combine with Module I and Module II !
+        Z = 0.5 # [m]
         nc = 2
         nz = nc +1  # number of nodes
         coord = np.array((0,0.25,Z))
@@ -63,12 +64,12 @@ def nodedistance(coord, nz):
 
     Arguments:
     ------------
-    coord     coordinates of the computational nodes
+    coord     coordinates of the computational nodes  [m]
     nz        number of comoutational nodes
 
     Results:
     -------------
-    dz        node distance
+    dz        node distance  [m]
     '''
     if type(coord) not in [list,tuple, float, int, np.ndarray]:
         raise TypeError ('coord array has to be an array')

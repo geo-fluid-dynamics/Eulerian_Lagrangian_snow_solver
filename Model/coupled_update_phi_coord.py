@@ -10,11 +10,11 @@ def coupled_update_phi_coord(T, c, dt, nz, phi, v_dz, coord, SetVel, v_opt, visc
     Arguments:
     -----------------------------------
     T          Temperature [K]
-    c          condensationrate [kg/m^3/s]
+    c          condensationrate [kgm-3s-1]
     dt         time step [s]
     nz         number of nodes
     phi        ice volume fraction from previous time step [-]
-    v_dz       derivative w.r.t. z of settling velocity from previous time step [1/s]
+    v_dz       derivative w.r.t. z of settling velocity from previous time step [s-1]
     coord      z-coordinates [m]
     SetVel     'Y' 'N' settling active or inactive
     v_opt       method for velocity computation
@@ -24,17 +24,15 @@ def coupled_update_phi_coord(T, c, dt, nz, phi, v_dz, coord, SetVel, v_opt, visc
     Results:
     -------------------------------------
     coord_new  updated z-coordinates [m]
-    v        updated settling velocity[m/s] with phi_new
-    v_dz_new   updated derivative w.r.t. z of settling velocity with phi_new [1/s]
+    v        updated settling velocity[ms-1] with phi_new
+    v_dz_new   updated derivative w.r.t. z of settling velocity with phi_new [s-1]
     phi_new  updated ice volume fraction [-]
-    sigma      vertical stress [kg/m/s^2]
+    sigma      vertical stress [kgm-1s-2]
     dz         node distances, distances between coordinates [m]
 
    '''
-
     phi_new = update_phi(c, dt, nz, phi, v_dz, coord)
     (coord_new, dz, v_dz_new, v, sigma) = update_coord(T, c, dt, nz, phi_new, coord, SetVel, v_opt, viscosity )
-
     return phi_new, coord_new, dz, v_dz_new, v, sigma 
 
 def update_phi(c, dt, nz, phi, v_dz, coord):
@@ -62,6 +60,7 @@ def update_phi(c, dt, nz, phi, v_dz, coord):
     
 def update_coord(T, c, dt, nz, phi, coord, SetVel, v_opt, viscosity ):
     '''
+    Coordinate transformation
     update coordinate system or computational nodes
 
     Arguments
@@ -84,7 +83,7 @@ def update_coord(T, c, dt, nz, phi, coord, SetVel, v_opt, viscosity ):
     sigma       stress from overburdened snow mass
     '''
     (v, v_dz_new, sigma) = settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity)
-    coord_new = coord + dt * v                     
+    coord_new = coord + dt * v               #     Coordinate transformation      
     dz = nodedistance(coord_new, nz)
     return coord_new, dz, v_dz_new, v, sigma
     

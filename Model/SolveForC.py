@@ -8,23 +8,23 @@ def solve_for_c(T, T_prev, phi, k_eff, rhoC_eff, D_eff, rho_v, rho_v_dT, v,v_dz,
 
     Arguments:
     -----------------------------------
-    T           present temperature
-    T_prev      previous temperature     
-    phi         ice volume fration
-    k_eff       thermal conductivity
-    rhoC_eff    specific heat capacity  
-    D_eff       effective diffusion coefficient
-    rho_v       saturation water vapor density
+    T           present temperature   [K]
+    T_prev      previous temperature   [K]
+    phi         ice volume fration   [K]
+    k_eff       thermal conductivity  [Wm-1K-1]
+    rhoC_eff    specific heat capacity  [JK-1m-3]
+    D_eff       effective diffusion coefficient  [m2s-1]
+    rho_v       saturation water vapor density   [kgm-3]
     rho_v_dT    derivative of rho_v w.r.t T
-    v           settling velocity
+    v           settling velocity   [ms-1]
     v_dz        derivative of v w.r.t z
     nz          number of computational nodes
-    dt          time step
-    dz          node distance
+    dt          time step   [s]
+    dz          node distance   [m]
 
     Returns:
     -----------------------------------
-    c           updated deposition rate 
+    c           updated deposition rate    [kgm-3s-1]
     '''
     
     a = np.zeros(nz)
@@ -80,7 +80,6 @@ def solve_for_c(T, T_prev, phi, k_eff, rhoC_eff, D_eff, rho_v, rho_v_dT, v,v_dz,
 # %% Grid-Error Trm from FD Scheme nonuniform grid 
  ### Matrixwise
     factor_dz = 2*(dz[1:]-dz[:-1]) /  (dz[1:]+ dz[:-1]) / ((dz[1:]**2 + dz[:-1]**2))
-    #factor_dz = (dz[1:]-dz[:-1]) /  (dz[1:]+ dz[:-1]) / (((dz[1:]**2 + dz[:-1]**2)/2))
     beta_left = (0.5 *(beta[2:] + beta[1:-1]))
     beta_right = (0.5 * (beta[1:-1] + beta [:-2]))
     main_E[1:-1] = ( factor_dz * beta_right- factor_dz * beta_left ) 
@@ -90,7 +89,7 @@ def solve_for_c(T, T_prev, phi, k_eff, rhoC_eff, D_eff, rho_v, rho_v_dT, v,v_dz,
     FD_error = np.dot(E,T)
     c = c - FD_error 
     
-#%% Term from settling velocity p_v^eq *d/dz (phi v) 
+#%% Not considered in the paper! Term from settling velocity p_v^eq *d/dz (phi v) 
     # vphi = phi*v     
     # r    = rho_v[1:-1]/((dz[1:]+dz[:-1]))
     # main_F[1:-1] = 0

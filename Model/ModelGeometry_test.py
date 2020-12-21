@@ -7,7 +7,7 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(dz, 1)
 
     def test_choosegeometry(self):
-        [nz, Z, coord] = ModelGeometry.choose_geometry('FieldScale0.5m')
+        [nz,Z, coord] = ModelGeometry.choose_geometry('FieldScale0.5m')
         self.assertEqual(nz,101)
         self.assertEqual(Z, 0.5)
         self.assertEqual(sum(coord), sum(np.linspace(0,Z,nz)))

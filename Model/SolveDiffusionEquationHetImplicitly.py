@@ -1,7 +1,7 @@
 from BoundaryCondition import boundary_condition
 import numpy as np
 from ConstantVariables import L
-def solve_diff_het_implicit(u, rho_v,rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, nz, dt, dz):
+def solve_diff_het_implicit(u, rho_v, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, nz, dt, dz):
      '''
      Solves simplified version of Equation 73 from Hansen with backward Euler
      (rhoC_eff+(1-phi)*rho_v_dT * L)* dT/dt = (L* D_eff* rho_v_dT + k-eff)* d^2T/dz^2
@@ -11,17 +11,17 @@ def solve_diff_het_implicit(u, rho_v,rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, n
 
      Arguments:
      ----------
-     u         state variable to be solved for (in this case T)
-     rho_v     saturation water vapor density
-     rho_v_dT  derivated of rho_v w.r.t. T
-     k_eff     thermal conductivity
-     D_eff     effective diffusion coefficient
-     rhoC_eff  effective heat capacity
-     phi       ice volume fraction
-     v         settling velocity
+     u         state variable to be solved for (in this case T) 
+     rho_v     saturation water vapor density   [kgm-3s-1]
+     rho_v_dT  derivative of rho_v w.r.t. T 
+     k_eff     thermal conductivity       [Wm-1K-1]
+     D_eff     effective diffusion coefficient   [m2s-1]
+     rhoC_eff  effective heat capacity       [JK-1m-3] 
+     phi       ice volume fraction   [-]
+     v         settling velocity  [ms-1]
      nz        number of computational nodes
-     dt        time steps
-     dz        node distance
+     dt        time steps   [s]
+     dz        node distance   [m]
 
      Returns:
      ----------
@@ -71,16 +71,11 @@ def solve_diff_het_implicit(u, rho_v,rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, n
      lower_A[:-1] = -Dl[1:-1] * (beta[1:-1] + beta [:-2])    
      main_A [1:-1] = a[1:-1] + Dl[1:-1]  * (beta[2:] + 2 * beta[1:-1] + beta[:-2])
      upper_A [1:] = -Dl[1:-1] * (beta[2:] + beta[1:-1]) 
-
-     ## Insert Dirichlet boundary condition in A
-     # main_A[0] = a[0] + Dl[0]  * (beta[1] + 2 * beta[0] + beta[0])# 1
-     # upper_A[0] = -Dl[0] * (beta[1] + beta[0]) #0
-     # main_A[-1] = a[-1] + Dl[-1]  * (beta[-1] + 2 * beta[-1] + beta[-2]) #1
-     # lower_A [-1] = -Dl[-1] * (beta[-1] + beta [-2]) # 0
      main_A[0] =  1
      upper_A[0] = 0
      main_A[-1] = 1
      lower_A [-1] = 0
+
 ### Set up tridiagonal Matrix A and solve for new u  
      A = np.zeros([nz,nz])          
      A = np.diag(np.ones(nz)*main_A,k=0) +np.diag(np.ones(nz-1)*lower_A,k=-1) +\
@@ -105,7 +100,7 @@ def solve_diff_het_implicit(u, rho_v,rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, n
      FD_error = np.dot(E,u)
      b = b - FD_error    
      
-#%% Set up matrix C - account for settling velocity
+#%% Not considered in the paper! Set up matrix C - account for settling velocity
      # vphi = phi*v     
      # r = L* rho_v[1:-1]/((dz[1:]+dz[:-1]))
      # main_C[0] = 2 *rho_v[0] / (2 * dz[0])
@@ -117,5 +112,6 @@ def solve_diff_het_implicit(u, rho_v,rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, n
      # C = np.diag(np.ones(nz)*(main_C),k=0 )+np.diag(np.ones(nz-1)*(lower_C),k=-1) + np.diag(np.ones(nz-1)*(upper_C),k=1) 
      # velterm = np.dot(C, vphi)          
      # b = b - velterm
-     u = np.linalg.solve(A,b)
-     return u,  a, beta
+
+     u_new = np.linalg.solve(A,b)
+     return u_new,  a, beta

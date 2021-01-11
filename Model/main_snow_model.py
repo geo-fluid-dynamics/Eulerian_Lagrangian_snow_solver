@@ -7,12 +7,12 @@ from store import store_results, set_up_matrixes
 from visualize_results import plot_results
 from c_solver import solve_for_c 
 from coupled_update_phi_coord import coupled_update_phi_coord
-from phi_from_rho_eff import fractions
+from phi_from_rho_eff import retrieve_phi_from_rho_eff
 from boundary_conditions import set_boundary_conditions
 from velocity import settling_vel
 import matplotlib.pyplot as plt 
 import numpy as np
- 
+
 def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_Hansen', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'N', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 7265):
     '''
     main snow model
@@ -32,8 +32,7 @@ def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_Hansen', T_ini = 'T_const_263',
     [nz, dz, Z, coord] = set_up_model_geometry(geom)
     [iter_max, dt, t_passed] = set_up_iter(it)  
     [T, rho_eff] = set_initial_conditions(nz, Z, RHO_ini, T_ini)
-    #T = set_boundary_conditions(T)
-    phi = fractions (nz,rho_eff)
+    phi = retrieve_phi_from_rho_eff (nz, rho_eff)
     [all_D_eff, all_k_eff, all_CFL, all_rhoC_eff, all_rho_v, all_T,all_c, all_phi, all_rho_eff,all_coord, all_v, all_sigma, all_t_passed, all_dz] = set_up_matrixes(iter_max, nz)
     CFL = np.zeros(nz)
     c = np.zeros(nz)

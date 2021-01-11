@@ -1,25 +1,25 @@
 import numpy as np
-from ConstantVariables import Z_field, Z_lab
+from constant_variables import Z_field, Z_lab
 
 def set_up_model_geometry(geom='FieldScale0.5m'):
     """
     Set-up model geometry 
-    Arguments:
+    Arguments
     ------------------------------
-    geom  Flag for geometry of choice
+        geom    Flag for geometry of choice
 
-    Results:
+    Results
     ---------------------------
-    nz    number of nodes
-    Z     total Snow Height  [m]
-    dz    cellsize[m]
-    coord snow height coordinates [m]
+        nz    number of nodes 
+        Z     total Snow Height  [m]
+        dz    node distance cell size [m]
+        coord snow height coordinates [m]
     """
     if geom not in ['FieldScale0.5m','LabScale0.02m','layer_based0.5m_2Layer']:
         raise TypeError ('The option for geom can only be: FieldScale0.5m, LabScale0.02m, layer_based0.5m_2Layer')
     
     [nz, Z, coord] = choose_geometry(geom)
-    dz = nodedistance(coord,nz)      
+    dz = node_distance(coord,nz)      
     return nz, dz, Z, coord
 
 def choose_geometry(geom):
@@ -27,15 +27,15 @@ def choose_geometry(geom):
     Select  geometry of the test cases at initiation 
     Arguments
     ----------------------------
-    'FieldScale0.5m' - 101 nodes or 251
-    'LabScale0.02m'  - represents the lab sace 
-    'layer_based0.5m_2Layer' - 3 computational nodes to reflect layer-based schemes
+        geom    'FieldScale0.5m' - 101 nodes or 251, 
+                'LabScale0.02m' - represents the lab scale,
+                layer_based0.5m_2Layer' - 3 computational nodes to reflect layer-based schemes
 
     Results
     -----------------------------
-    nz      number of computational nodes
-    Z       initial height of the snowpack
-    coord   initial z-coordinates
+        nz      number of computational nodes
+        Z       initial height of the snowpack
+        coord   initial z-coordinates
     '''
     if geom not in ['FieldScale0.5m','LabScale0.02m','layer_based0.5m_2Layer']:
         raise TypeError ('The option for geom can only be: FieldScale0.5m, LabScale0.02m, layer_based0.5m_2Layer')
@@ -58,18 +58,18 @@ def choose_geometry(geom):
         raise ValueError('Requested geometry not available')
     return nz, Z, coord
 
-def nodedistance(coord, nz):
+def node_distance(coord, nz):
     '''
     Computation of the node distance based on the node coordiantes
 
     Arguments:
     ------------
-    coord     coordinates of the computational nodes  [m]
-    nz        number of comoutational nodes
+        coord     mesh coordinates [m]
+        nz        number of computational nodes
 
     Results:
     -------------
-    dz        node distance  [m]
+        dz        node distance  [m]
     '''
     if type(coord) not in [list,tuple, float, int, np.ndarray]:
         raise TypeError ('coord array has to be an array')

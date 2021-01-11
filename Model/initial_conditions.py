@@ -17,6 +17,11 @@ def set_initial_conditions(nz, Z, RHO_ini, T_ini):
                 'RHO_2Layer_Continuous_smooth' 2 snow layers of varying densities. Their transition is smoothed out across 5 nodes
                 'RHO_2layer_based' mimicks layer based scheme
                 'RHO_2layer' two layers with distinct snow density and sharp transition between them
+    
+    Returns
+    --------
+        T       initial temperature profile
+        rho_eff initial snow density profile
 
     '''
 #%% Temperature 

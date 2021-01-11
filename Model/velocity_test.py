@@ -1,6 +1,6 @@
 import unittest
 import velocity
-from ConstantVariables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i,Z_max ,D_rate
+from constant_variables import a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i,Z_max ,D_rate
 import numpy as np
 
 class TestVelocity(unittest.TestCase):

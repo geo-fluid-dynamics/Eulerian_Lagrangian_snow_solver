@@ -41,24 +41,27 @@ Note that if Module II and Module I are deactivated no diffusion is simulated. T
 
 - open 'main_snow_model.py'
 
-*default combination* and with all processes (Module I, II and III) activated:
-- paste the following options in the function input for main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'Y', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 17406`
+*default combination* with all processes (Module I, II and III) activated:
+- paste the following options in the function input of main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'Y', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 17406`
 - run 'main_snow_model.py' in Python
 
-only *heat transport* is active:
-- paste the following options in the function input for main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'N', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 7265` 
+only *heat transport* active:
+- paste the following options in the function input of main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'N', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 7265` 
 - deactivate (comment) Module II to solve for deposition rate
 - run 'main_snow_model.py' in Python
 
 *Heat transport and vapor transport* active, settling inactive:
-- paste the following options in the function input for main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'N', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 7278` 
+- paste the following options in the function inputof main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'N', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 7278` 
 - activate (uncomment) Module I and II to solve for temperature and deposition rate
 - The ice crust simulation from Hansen and Foslien (2015) case is reflected by choosing 'RHO_ini=' `RHO_Hansen`
 - run 'main_snow_model.py' in Python
 
-mimick *layer-based schemes*:
-- deactivate (comment) Module I and Module II and paste the following options in the function input for main():`[dt, CFL] = comp_dt(t_passed, dz, a, b)` in line 64, activate `dt = 100` in line 62.
+mimick *layer-based schemes* only settling active:
+- deactivate (comment) Module I and Module II and paste the following options in the function input of main():`[dt, CFL] = comp_dt(t_passed, dz, a, b)` in line 64, activate `dt = 100` in line 62.
 - paste the following options in the main() input : `geom ='layer_based0.5m_2Layer', RHO_ini = 'RHO_2Layer_layer_based', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'Y', v_opt = 'layer_based' , viscosity = 'eta_phiT', it = 1732`
 - run 'main_snow_model.py' in Python
 
 ## Output
+
+After running the code several plots have been generated. The profile plots for temperature, velocity, water vapor density, ice volume fraction, and node distance show the respective values at the start, after one third, and at the end of the simulation time. Additionally, the heat map for ice volume shows its temporal evolution, including the settlement (if active). 
+If you want to save the results of the computation, the functions to save the data to txt files can be activated in main(). 

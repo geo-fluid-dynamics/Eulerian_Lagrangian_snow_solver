@@ -33,7 +33,7 @@ def t_total(t_passed,dt):
 def comp_dt(t_passed,dz, a,beta):
     '''
     calculates the time step for the next iteration based on mesh fourier number with coefficients a and b from 
-    temperature equation and computes the stability criterion based on CFL condition
+    temperature equation and computes the stability criterion based on the mesh fourier number.
     Arguments:
     ----------------
         t_passed    time already passed
@@ -44,11 +44,11 @@ def comp_dt(t_passed,dz, a,beta):
     Results:
     ---------------
         dt          new time step
-        CFL         Stability criterion has to be below 0.5
+        FN         stability criterion (mesh fourier number)(for diffusion dominated systems) has to be below 0.5
     '''
     nz = np.size(a)
     D = np.zeros(nz)
-    CFL = np.zeros(nz)
+    FN = np.zeros(nz)
     
     dz_min = np.min(dz)
     dt = 0.4999 * a/beta * dz_min**2
@@ -58,6 +58,6 @@ def comp_dt(t_passed,dz, a,beta):
     D[1:-1] = dt/((dz[1:]**2 + dz[:-1]**2)/2)
     D[0] = dt/dz[0]**2
     D[-1] = dt/dz[-1]**2
-    CFL = D/a* beta 
-    return dt, CFL
+    FN = D/a* beta 
+    return dt, FN
     

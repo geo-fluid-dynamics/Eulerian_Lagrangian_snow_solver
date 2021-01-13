@@ -13,7 +13,7 @@ from velocity import settling_vel
 import matplotlib.pyplot as plt 
 import numpy as np
 
-def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_Hansen', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'N', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 7265):
+def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'Y', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 72650):
     '''
     main snow model
     
@@ -33,16 +33,16 @@ def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_Hansen', T_ini = 'T_const_263',
     [iter_max, dt, t_passed] = set_up_iter(it)  
     [T, rho_eff] = set_initial_conditions(nz, Z, RHO_ini, T_ini)
     phi = retrieve_phi_from_rho_eff (nz, rho_eff)
-    [all_D_eff, all_k_eff, all_CFL, all_rhoC_eff, all_rho_v, all_T,all_c, all_phi, all_rho_eff,all_coord, all_v, all_sigma, all_t_passed, all_dz] = set_up_matrixes(iter_max, nz)
-    CFL = np.zeros(nz)
+    [all_D_eff, all_k_eff, all_FN, all_rhoC_eff, all_rho_v, all_T,all_c, all_phi, all_rho_eff,all_coord, all_v, all_sigma, all_t_passed, all_dz] = set_up_matrixes(iter_max, nz)
+    FN = np.zeros(nz)
     c = np.zeros(nz)
     [D_eff, k_eff, rhoC_eff, rho_v, rho_v_dT] = update_model_parameters(phi, T, nz, coord, SWVD)
     [v, v_dz, sigma] = settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity)
 
     for t in range(iter_max):
         print(t)
-        [all_D_eff, all_k_eff, all_CFL, all_rhoC_eff, all_rho_v, all_T,all_c,all_phi,  all_rho_eff, all_coord, all_v, all_sigma, all_t_passed,  all_dz] \
-            =  store_results(all_D_eff, all_k_eff, all_CFL, all_rhoC_eff, all_rho_v, all_T, all_c,all_phi, all_rho_eff, all_coord, all_v, all_sigma, all_t_passed,all_dz, D_eff, k_eff, CFL, phi, rhoC_eff, rho_v, T, c, rho_eff, coord, v, sigma,  t, iter_max, nz,dz,t_passed)        
+        [all_D_eff, all_k_eff, all_FN, all_rhoC_eff, all_rho_v, all_T,all_c,all_phi,  all_rho_eff, all_coord, all_v, all_sigma, all_t_passed,  all_dz] \
+            =  store_results(all_D_eff, all_k_eff, all_FN, all_rhoC_eff, all_rho_v, all_T, all_c,all_phi, all_rho_eff, all_coord, all_v, all_sigma, all_t_passed,all_dz, D_eff, k_eff, FN, phi, rhoC_eff, rho_v, T, c, rho_eff, coord, v, sigma,  t, iter_max, nz,dz,t_passed)        
         T_prev = T
         # Module I solves for temperature - Diffusion
         (T, a, b) = solve_for_T(T, rho_v,rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, nz, dt, dz)     
@@ -60,12 +60,12 @@ def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_Hansen', T_ini = 'T_const_263',
         # activate next line if Module I and II are deactivated
         # dt = 100
         # deactivate next line if Module I and/or II are deactivated
-        [dt, CFL] = comp_dt(t_passed, dz, a, b)  
+        [dt, FN] = comp_dt(t_passed, dz, a, b)  
         
     # uncomment to save data in txt files    
     # np.savetxt( str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_phi'      , all_phi)
     # np.savetxt( str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_coord'    , all_coord)
-    np.savetxt( str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_t_passed' , all_t_passed)
+    # np.savetxt( str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_t_passed' , all_t_passed)
     # np.savetxt( str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_v'        , all_v)
     # np.savetxt( str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_dz'       , all_dz)
     # np.savetxt( str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_c'        , all_c)
@@ -73,8 +73,8 @@ def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_Hansen', T_ini = 'T_const_263',
     # np.savetxt( str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_rho_v'    , all_rho_v)
 
 ### Visualize results
-    plot_results( all_T, all_c, all_phi, all_rho_eff, all_CFL, all_coord, all_v, all_sigma, all_rho_v, iter_max, nz, Z, dt, all_dz,all_t_passed, geom, RHO_ini, T_ini, SWVD , SetVel , v_opt, viscosity, plot=True)
-    return all_T, all_D_eff, all_CFL, all_rho_v, all_k_eff, all_c, all_phi,  all_rho_eff, all_coord,all_v, all_sigma, all_t_passed, all_dz
+    plot_results( all_T, all_c, all_phi, all_rho_eff, all_FN, all_coord, all_v, all_sigma, all_rho_v, iter_max, nz, Z, dt, all_dz,all_t_passed, geom, RHO_ini, T_ini, SWVD , SetVel , v_opt, viscosity, plot=True)
+    return all_T, all_D_eff, all_FN, all_rho_v, all_k_eff, all_c, all_phi,  all_rho_eff, all_coord,all_v, all_sigma, all_t_passed, all_dz
 
 if __name__ == '__main__':
     main()

@@ -8,22 +8,23 @@ output: html_document
 ---
 
 # Readme Vers 1.0
-### Code corresponds to *Elements of future snowpack modeling - part 2: A modular and extendable Eulerian-Lagrangian numerical scheme for coupling transport, phase changes and mechanics*
+### Code corresponds to the model introduced in the paper: *Elements of future snowpack modeling - part 2: A modular and extendable Eulerian-Lagrangian numerical scheme for coupling transport, phase changes and mechanics*
+*This readme is directed to the reades of the paper mentioned above. It is  is meant to be used to reproduce the results.*
 
 ## The project
 We developed a Eulerian-Lagrangian computational scheme to model the snowpack's coupled transport, phase change and mechanics. Our approach is modular, so that single processes can be *activated* and *deactivated*. This is useful to evaluate the potential superposition and interdependence of all processes. The modularity is realized by splitting the process equations into diffusion (heat and water vapor transport) and advection (mechanical settling) dominated processes. 
 
 ## Requirements
-The code is implemented in Python 3
+The code is implemented in Python 3.7.0. A requirements.txt file can be found in the repository. 
 
 ## Details on the code
 If you want to adjust the computation, so e.g. change the flow law, the routine for velocity computation or deactivate specific modules two locations in the code are relevant:
 1. the input of main(...)
-2. the modules that solve for transport (Diffusion - Module I), deposition rate (Diffusion - Module II) and ice volume fraction combined with mesh coordinates (Advection - Module III), which can be deactived/activated
+2. the modules that solve for temperature (heat transport, diffusion - Module I), deposition rate (water vapor transport, diffusion - Module II) and ice volume fraction combined with mesh coordinates (mechanical settling, advection - Module III), which can all be deactived/activated.
 
 #### 1. Input options for main()
 - *geom* defines the initial geometry of the snowpack model. Three options ('FieldScale0.5m', 'LabScale0.02m', 'layer_based0.5m_2Layer') are available. 'FieldScale0.5m' is the default.
-- *RHO_ini* defines the initial snow density. Eight options are available, which are mentioned and explained in the `set_initial_conditions` function in 'initial_conditions.py'. 'RHO_2Layer_Continuous_smooth' is the default. 'RHO_2Layer_layer_based' is used to mimick layer based schemes. 
+- *RHO_ini* defines the initial snow density. Eight options are available, which are mentioned and explained in the `set_initial_conditions` function in 'initial_conditions.py'. 'RHO_2Layer_Continuous_smooth' is the default. 'RHO_2Layer_layer_based' is used to mimick layer based schemes.
 - *T_ini* defines the initial snow temperature. Four options are available, which are mentioned and explained in the `set_initial_conditions` function in 'initial_conditions.py'. 'T_const_263' is the default.
 - *SWVD* defines the equations used for saturation water vapor density, which are further explained in the `sat_vap_dens` function in 'model_parameters.py'
 - *SetVel* activate or deactivate mechanical settling. 'Y' active and 'N' inactive
@@ -58,7 +59,7 @@ only *heat transport* active:
 
 mimick *layer-based schemes* only settling active:
 - deactivate (comment) Module I and Module II and paste the following options in the function input of main():`[dt, CFL] = comp_dt(t_passed, dz, a, b)` in line 64, activate `dt = 100` in line 62.
-- paste the following options in the main() input : `geom ='layer_based0.5m_2Layer', RHO_ini = 'RHO_2Layer_layer_based', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'Y', v_opt = 'layer_based' , viscosity = 'eta_phiT', it = 1732`
+- paste the following options in the main() input : `geom ='layer_based0.5m_2Layer', RHO_ini = 'RHO_2Layer_layer_based', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'Y', v_opt = 'layer_based' , viscosity = 'eta_constant_n1', it = 1732`
 - run 'main_snow_model.py' in Python
 
 ## Output

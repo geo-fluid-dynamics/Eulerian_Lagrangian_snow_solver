@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from model_geometry import node_distance
-from constant_variables import D_rate, a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i, Z_max,  rho_i_average, Z_max, pl1, pl2
+from constant_variables import D_rate_literature, a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i, Z_max,  rho_i_average, Z_max, pl1, pl2
 
 def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
     '''
@@ -21,7 +21,6 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
         v_dz        spatial derivative of the settling velocity
         sigma       vertical stress at each computational node in the snowpack
     '''
-    from constant_variables import D_rate
     dz = node_distance(coord, nz)
     if SetVel == 'N':
         v = np.zeros(nz)                       # [m s-1]
@@ -46,13 +45,13 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
         elif v_opt == 'polynom':
                 # linearly increasing with snow height
                 sigma = sigma_cont_croc(dz, phi, nz, v_opt)
-                D_coeff = - np.ones(nz) * D_rate             # deformation rate coefficient 
+                D_coeff = - np.ones(nz) * D_rate_literature             # deformation rate coefficient 
                 D_rate = D_coeff                       # [1/s] Deformation rate
                 v = D_rate * coord                      # [m/s] settlement velocity
                 v_dz = D_rate
         elif v_opt == 'const':
                 # spatially constant settling velocity
-                v = - np.ones(nz) * D_rate
+                v = - np.ones(nz) * D_rate_literature
                 v_dz = np.zeros(nz)
                 sigma = sigma_cont_croc(dz, phi, nz, v_opt)
         elif v_opt == 'phi_dependent':    
@@ -61,7 +60,7 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
                 sigma = sigma_cont_croc(dz, phi, nz, v_opt)
                 phi_max = (0.4-0.9)/coord[-1] *coord +0.9 # 0.25
                 restrict =( 1-phi/phi_max)
-                D_coeff = -np.ones(nz) * D_rate            
+                D_coeff = -np.ones(nz) * D_rate_literature            
                 D_rate = D_coeff * restrict             # deformationrate           
                 v_dz = D_rate.copy()
                 D_rate[0] = 0                           # Deformation rate at bottom = 0
@@ -98,6 +97,7 @@ def choose_viscosity( T, phi, viscosity):
                 etatest1 = eta_0 * rho_i * phi_const/c_eta * np.exp(a_eta *(T_fus - T_const)+ b_eta *rho_i * phi_const) 
                 # apply power law to restrict ice volume growth tp <0.95 
                 eta = etatest1 * restrict
+                eta [0] = 99999999999999999
         elif viscosity == 'eta_phi': # visocosity controlled by ice volume fraction
                 eta = eta_0 * rho_i * phi/c_eta * np.exp(a_eta * (T_fus - T_const) + b_eta * rho_i * phi)
         elif viscosity == 'eta_T': # visocosity controlled by temperature
@@ -107,7 +107,7 @@ def choose_viscosity( T, phi, viscosity):
         elif viscosity == 'eta_constant_n3':  
                 # non-linear stress strain rate relation, Glens flow law n=3
                 sigma = phi_const* Z_max * rho_i * g 
-                eta1 = 1/D_rate * sigma **3
+                eta1 = 1/D_rate_literature * sigma **3
                 eta = eta1 * restrict 
         else:
                 raise ValueError('Option for viscosity computation not available')

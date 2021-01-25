@@ -9,7 +9,7 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
 
     Arguments
     -------------
-        T           Temperature [K]
+        T           temperature [K]
         nz          number of computational nodes [-]
         z           mesh coordinates of computational nodes in the snowpack [m]
         phi         ice volume fraction [-]
@@ -97,7 +97,6 @@ def choose_viscosity( T, phi, viscosity):
                 etatest1 = eta_0 * rho_i * phi_const/c_eta * np.exp(a_eta *(T_fus - T_const)+ b_eta *rho_i * phi_const) 
                 # apply power law to restrict ice volume growth tp <0.95 
                 eta = etatest1 * restrict
-                eta [0] = 99999999999999999
         elif viscosity == 'eta_phi': # visocosity controlled by ice volume fraction
                 eta = eta_0 * rho_i * phi/c_eta * np.exp(a_eta * (T_fus - T_const) + b_eta * rho_i * phi)
         elif viscosity == 'eta_T': # visocosity controlled by temperature

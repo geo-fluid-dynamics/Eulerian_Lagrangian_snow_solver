@@ -106,6 +106,20 @@ def set_initial_conditions(nz, Z, RHO_ini, T_ini):
         rho_eff[nz1] = 112.5
         rho_eff[nz1+1] = 93.75
         rho_eff[nz1+2:nz2] = 75
+
+
+        # rho_eff = np.ones(nz)#*75
+        # rho_eff[0] = 150
+        # for i in range(nz1-9):
+        #     rho_eff[i]= 150
+        # fill_list1 = np.linspace(150,112.5,11)
+        # fill_list2 = np.linspace(112.5,75,11)
+        # rho_eff[nz1-10:nz1] = fill_list1[:-1]
+        # rho_eff[nz1] = 112.5
+        # rho_eff[nz1+1:nz1+11] = fill_list2[1:]
+        # rho_eff[nz1+11:] = 75
+
+    
     elif RHO_ini == 'RHO_2Layer_layer_based':
         # only valid for a set up of 3 computational nodes (mimicking the layer based scheme)
         # 3 computational nodes represent 2 layers with distinct snow densities.

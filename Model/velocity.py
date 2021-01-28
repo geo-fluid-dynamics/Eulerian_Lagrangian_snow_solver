@@ -105,8 +105,8 @@ def choose_viscosity( T, phi, viscosity):
                 eta  = eta_0 * rho_i * phi/c_eta * np.exp(a_eta * (T_fus - T) + b_eta * rho_i * phi)
         elif viscosity == 'eta_constant_n3':  
                 # non-linear stress strain rate relation, Glens flow law n=3
-                sigma = phi_const* Z_max * rho_i * g 
-                eta1 = 1/D_rate_literature * sigma **3
+                sigma = Z_max * rho_i_average * g 
+                eta1 = 1/D_rate_literature * sigma**3
                 eta = eta1 * restrict 
         else:
                 raise ValueError('Option for viscosity computation not available')
@@ -168,7 +168,7 @@ def velocity(sigma, eta, dz, nz, viscosity):
                 v               velocity [ms-1]
                 v_dz            derivative of velocity, equivalent to deformation rate [s-1]
         '''
-        if 'viscosity' == 'eta_constant_n3':
+        if viscosity == 'eta_constant_n3':
                 n = 3
         else:
                 n = 1

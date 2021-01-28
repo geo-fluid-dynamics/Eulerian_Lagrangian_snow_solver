@@ -7,7 +7,6 @@ from matplotlib.ticker import AutoMinorLocator
 from constant_variables import rho_i
 from matplotlib import rcParams
 from figure_1column import figsize_1c , linewidth_1c , labelpad_1c , fontsize_1c , length_1c , width_1c, pad_1c , labelsize_1c , fontsize_legend_1c
-
 rcParams.update({'figure.autolayout': True})
 
 def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_sigma, all_rho_v, nt,nz,Z,dt,all_dz,all_t_passed,geom, RHO_ini, T_ini, SWVD , SetVel , v_opt, viscosity, plot=True):
@@ -39,8 +38,8 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     fig11 = plt.figure(figsize= (figsize_1c))
     spec11 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig11)
     f11_ax1 = fig11.add_subplot(spec11[0, 0])
-    f11_ax1.plot(all_T[0,:], all_coord[0,:],'k-', label = 'after 0 h', linewidth = linewidth_1c)
-    f11_ax1.plot(all_T[t1_index,:], all_coord[t1_index,:],'k--',  label = 'after %d h' %int(all_t_passed[t1_index]), linewidth = linewidth_1c)
+    f11_ax1.plot(all_T[t1_index,:], all_coord[t1_index,:],'k-',  label = 'after %d h' %int(all_t_passed[t1_index]), linewidth = linewidth_1c)
+    f11_ax1.plot(all_T[t2_index,:], all_coord[t2_index,:],'k--',  label = 'after %d h' %int(all_t_passed[t2_index]), linewidth = linewidth_1c)
     f11_ax1.plot(all_T[-1,:], all_coord[-1,:],'k:', label = 'after %d h' %int(all_t_passed[-1]), linewidth = linewidth_1c)
     f11_ax1.set_xlabel('Temperature [K]', fontsize = fontsize_1c, labelpad = labelpad_1c)
     f11_ax1.set_ylabel('Snow height [cm]',  fontsize = fontsize_1c, labelpad = labelpad_1c)
@@ -58,8 +57,8 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     fig12 = plt.figure(figsize= (figsize_1c))
     spec12 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig12)
     f12_ax2 = fig12.add_subplot(spec12[0, 0])
-    f12_ax2.plot(all_c[0,:], all_coord[0,:], 'k-', label = 'after 0 h', linewidth = linewidth_1c)
-    f12_ax2.plot(all_c[t1_index,:], all_coord[t1_index,:], 'k--',label = 'after %d h' %int(all_t_passed[t1_index]), linewidth = linewidth_1c)
+    f12_ax2.plot(all_c[t1_index,:], all_coord[t1_index,:], 'k-',label = 'after %d h' %int(all_t_passed[t1_index]), linewidth = linewidth_1c)
+    f12_ax2.plot(all_c[t2_index,:], all_coord[t2_index,:],'k--',  label = 'after %d h' %int(all_t_passed[t2_index]), linewidth = linewidth_1c)
     f12_ax2.plot(all_c[-1,:], all_coord[-1,:], 'k:', label = 'after %d h' %int(all_t_passed[-1]), linewidth = linewidth_1c)
     f12_ax2.set_xlabel('Deposition rate [kg m$^{-3}$ d$^{-1}$]', fontsize = fontsize_1c, labelpad = labelpad_1c)
     f12_ax2.set_ylabel('Snow height [cm]', fontsize = fontsize_1c, labelpad = labelpad_1c)
@@ -75,9 +74,9 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     fig13 = plt.figure(figsize= (figsize_1c))
     spec13 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig13)
     f13_ax3 = fig13.add_subplot(spec13[0, 0])
-    f13_ax3.plot(all_phi[0,:], all_coord[0,:], 'k:', label = 'after 0 h ', linewidth = linewidth_1c) #     - numerical solution
-    f13_ax3.plot(all_phi[t1_index,:], all_coord[t1_index,:], 'k--', label = 'after %d h ' %int(all_t_passed[t1_index]), linewidth = linewidth_1c) # - numerical solution
-    f13_ax3.plot(all_phi[-1,:], all_coord[-1,:], 'k-',  label = 'after %d h ' %int(all_t_passed[-1]), linewidth = linewidth_1c) # - numerical solution
+    f13_ax3.plot(all_phi[t1_index,:], all_coord[t1_index,:], 'k-', label = 'after %d h ' %int(all_t_passed[t1_index]), linewidth = linewidth_1c) # - numerical solution
+    f13_ax3.plot(all_phi[t2_index,:], all_coord[t2_index,:],'k--',  label = 'after %d h' %int(all_t_passed[t2_index]), linewidth = linewidth_1c) #     - numerical solution
+    f13_ax3.plot(all_phi[-1,:], all_coord[-1,:], 'k:',  label = 'after %d h ' %int(all_t_passed[-1]), linewidth = linewidth_1c) # - numerical solution
     f13_ax3.set_xlabel('Ice volume fraction [-]', fontsize = fontsize_1c, labelpad = labelpad_1c)
     f13_ax3.set_ylabel('Snow height [cm]', fontsize = fontsize_1c, labelpad = labelpad_1c)
     f13_ax3.set_ylim(0, np.max(all_coord))
@@ -95,8 +94,8 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     fig15 = plt.figure(figsize= (figsize_1c))
     spec15 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig15)
     f15_ax5 = fig15.add_subplot(spec15[0, 0])
-    f15_ax5.plot(all_dz[0,:], all_coord[0,1:], 'k-', label = 'after 0 h', linewidth = linewidth_1c)
-    f15_ax5.plot(all_dz[int(nt/3)+1,:], all_coord[t1_index,1:], 'k--', label = 'after %d h' %int(all_t_passed[t1_index]), linewidth = linewidth_1c) 
+    f15_ax5.plot(all_dz[int(nt/3)+1,:], all_coord[t1_index,1:], 'k-', label = 'after %d h' %int(all_t_passed[t1_index]), linewidth = linewidth_1c) 
+    f15_ax5.plot(all_dz[t2_index,:], all_coord[0,1:],'k--',  label = 'after %d h' %int(all_t_passed[t2_index]), linewidth = linewidth_1c)
     f15_ax5.plot(all_dz[-1,:], all_coord[-1,1:], 'k:', label = 'after %d h' %int(all_t_passed[-1]), linewidth = linewidth_1c)
     f15_ax5.set_xlabel('Node distance [m] ', fontsize = fontsize_1c, labelpad = labelpad_1c)
     f15_ax5.set_ylabel('Snow height [cm]',  fontsize = fontsize_1c, labelpad = labelpad_1c)    
@@ -115,8 +114,8 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     fig16 = plt.figure(figsize= (figsize_1c))
     spec16 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig16)
     f16_ax6 = fig16.add_subplot(spec16[0,  0])
-    f16_ax6.plot(all_v[0,:], all_coord[0,:],'k-', label = 'after 0 h', linewidth = linewidth_1c)
-    f16_ax6.plot(all_v[t1_index,:],all_coord[t1_index,:], 'k--', label = 'after %d h' %int(all_t_passed[t1_index]), linewidth = linewidth_1c)
+    f16_ax6.plot(all_v[t1_index,:],all_coord[t1_index,:], 'k-', label = 'after %d h' %int(all_t_passed[t1_index]), linewidth = linewidth_1c)
+    f16_ax6.plot(all_v[t2_index,:], all_coord[t2_index,:],'k--',  label = 'after %d h' %int(all_t_passed[t2_index]), linewidth = linewidth_1c)
     f16_ax6.plot(all_v[-1,:], all_coord[-1,:], 'k:', label = 'after %d h' %int(all_t_passed[-1]), linewidth =10)
     f16_ax6.set_xlabel('Settling velocity [cm d$^{-1}$]', fontsize = fontsize_1c, labelpad = labelpad_1c)
     f16_ax6.set_ylabel('Snow height [cm]', fontsize = fontsize_1c, labelpad = labelpad_1c)
@@ -184,8 +183,8 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     fig18 = plt.figure(figsize= (figsize_1c))
     spec18 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig18)
     f11_ax1 = fig18.add_subplot(spec18[0, 0])
-    f11_ax1.plot(all_rho_v[0,:], all_coord[0,:],'k-', label = 'after 0 h', linewidth = linewidth_1c)
-    f11_ax1.plot(all_rho_v[t1_index,:], all_coord[t1_index,:],'k--',  label = 'after %d h' %int(all_t_passed[t1_index]), linewidth = linewidth_1c)
+    f11_ax1.plot(all_rho_v[t1_index,:], all_coord[t1_index,:],'k-',  label = 'after %d h' %int(all_t_passed[t1_index]), linewidth = linewidth_1c)
+    f11_ax1.plot(all_rho_v[t2_index,:], all_coord[t2_index,:],'k--',  label = 'after %d h' %int(all_t_passed[t2_index]), linewidth = linewidth_1c)
     f11_ax1.plot(all_rho_v[-1,:], all_coord[-1,:],'k:', label = 'after %d h' %int(all_t_passed[-1]), linewidth = linewidth_1c)
     f11_ax1.set_xlabel('Water vapor density [g m$^{-3}$]', fontsize = fontsize_1c, labelpad = labelpad_1c)
     f11_ax1.set_ylabel('Snow height [cm]',  fontsize = fontsize_1c, labelpad = labelpad_1c)

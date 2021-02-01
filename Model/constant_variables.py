@@ -49,9 +49,7 @@ T_fus = 273         # [K] Melting temperature of water
 g = 9.80665         # [ms-2] gravitational constant
  
 ### snow viscosity for non-linear Glen's flow law
-D_rate_literature = 10e-5  # [s-1] Deformation rate for snow intermediate value as mentioned in Bartelt et al. (2002)
-Z_max = 0.5     # [m]
-rho_i_average = 112.5  # [kgm-3]
+D_rate_literature = 10e-6  # [s-1] Deformation rate for snow intermediate value as mentioned in Bartelt et al. (2002)
 
 ### power law to restrict ice volume growth
 pl1 = 690

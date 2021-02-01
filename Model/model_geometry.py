@@ -41,12 +41,12 @@ def choose_geometry(geom):
         raise TypeError ('The option for geom can only be: FieldScale0.5m, LabScale0.02m, layer_based0.5m_2Layer')
     if geom =='FieldScale0.5m': 
         Z = Z_field # height[m]
-        nc = 100  # or 250
+        nc = 100  # or 100
         nz = nc +1  # number of nodes
         coord = np.linspace(0,Z,nz) # [m]
     elif geom =='LabScale0.02m':
         Z = Z_lab # height [m]
-        nc = 100
+        nc = 50
         nz = nc +1  # number of nodes
         coord = np.linspace(0,Z,nz) # [m]      
     elif geom =='layer_based0.5m_2Layer':  # do not combine with Module I and Module II !
@@ -75,7 +75,7 @@ def node_distance(coord, nz):
         raise TypeError ('coord array has to be an array')
     if type(nz) not in [int]:
         raise TypeError ('nz has to be an integer')    
-    if len(coord) is not nz:
+    if int(len(coord)) != int(nz):
         raise ValueError ('number of coordinates does not fit with number of computational nodes')
     dz = np.zeros(nz-1)
     dz = coord[1:] - coord[:-1]

@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from model_geometry import node_distance
-from constant_variables import D_rate_literature, a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i, Z_max,  rho_i_average, Z_max, pl1, pl2
+from constant_variables import D_rate_literature, a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i, pl1, pl2
 
 def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
     '''
@@ -30,7 +30,7 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
         D_coeff = np.zeros(nz)                          # Deformation rate coefficient [s-1]
         if v_opt =='continuous':
                 # many computational nodes approx. continuous 
-                eta = choose_viscosity(T, phi, viscosity)
+                eta = choose_viscosity(T, phi, viscosity, dz,nz)
                 sigma = sigma_cont_croc(dz, phi, nz, v_opt)
                 (v,v_dz) = velocity(sigma, eta, dz, nz, viscosity)      
         elif v_opt == 'layer_based':                         
@@ -39,7 +39,7 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
                 # only works with model geometry geom= layer_based0.5m_2Layer'
                 if nz is not 3:
                         raise IndexError('For layer_based velocity only 3 computational nodes are allowed')
-                eta = choose_viscosity( T, phi, viscosity)
+                eta = choose_viscosity( T, phi, viscosity, dz,nz)
                 sigma = sigma_cont_croc(dz, phi, nz, v_opt)
                 (v,v_dz) = velocity(sigma, eta, dz, nz, viscosity)
         elif v_opt == 'polynom':
@@ -73,7 +73,7 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
                 
     return v, v_dz, sigma
             
-def choose_viscosity( T, phi, viscosity):
+def choose_viscosity( T, phi, viscosity, dz, nz):
         '''
         computes snow viscosity for snow based on a viscosity formulation from Vionnet et al. (2012)
         
@@ -105,8 +105,25 @@ def choose_viscosity( T, phi, viscosity):
                 eta  = eta_0 * rho_i * phi/c_eta * np.exp(a_eta * (T_fus - T) + b_eta * rho_i * phi)
         elif viscosity == 'eta_constant_n3':  
                 # non-linear stress strain rate relation, Glens flow law n=3
-                sigma = Z_max * rho_i_average * g 
-                eta1 = 1/D_rate_literature * sigma**3
+                rho_eff = np.ones(nz)
+                rho_eff[0] = 150
+                x1 = 0.5            
+                nz1 = int(x1 * nz)
+                nz2 = nz
+                for i in range(nz1-1):
+                    rho_eff[i]= 150
+                rho_eff[nz1-1] = 131.25
+                rho_eff[nz1] = 112.5
+                rho_eff[nz1+1] = 93.75
+                rho_eff[nz1+2:nz2] = 75
+                sigma = np.zeros(nz)
+                sigma_Dz = np.zeros(nz)
+                sigma_Dz[:-1] =  g * phi[:-1] * rho_i * dz[:]
+                sigma_Dz[-1] = 0 #  no stress at heighest node, interface with atmosphere, no overburdened snow mass
+                sigma = np.cumsum(sigma_Dz[::-1])       # cumulative sum of stress from top to bottom
+                sigma = sigma [::-1]                    # sigma reversed -> local stress at each computational node
+                sigma_intermed = np.max(sigma)
+                eta1 = 1/D_rate_literature * sigma_intermed**3
                 eta = eta1 * restrict 
         else:
                 raise ValueError('Option for viscosity computation not available')

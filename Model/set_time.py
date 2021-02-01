@@ -44,7 +44,7 @@ def comp_dt(t_passed,dz, a,beta):
     Results:
     ---------------
         dt          new time step
-        FN         stability criterion (mesh fourier number)(for diffusion dominated systems) has to be below 0.5
+        FN          stability criterion (mesh fourier number)(for diffusion dominated systems) has to be below 0.5
     '''
     nz = np.size(a)
     D = np.zeros(nz)

@@ -1,5 +1,7 @@
-from constant_variables import rho_i, rho_a
 import numpy as np
+
+from model.constant_variables import rho_i, rho_a
+
 def retrieve_phi_from_rho_eff(nz, rho_eff):
     """
     Retrieve ice volume fraction from snow density

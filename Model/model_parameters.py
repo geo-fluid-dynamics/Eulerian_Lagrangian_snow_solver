@@ -1,6 +1,7 @@
 import numpy as np
-from constant_variables import D0, k_i, k_a, rho_a, rho_i,C_i, C_a, ka0, ka1, ka2 , L_Cal, mH2O, kB, T_ref_L, a0, a1, a2, f, rho_ref, T_ref_C, c1, c2, c3, c4, c5, c6, R_v
 import matplotlib.pyplot as plt
+
+from model.constant_variables import D0, k_i, k_a, rho_a, rho_i,C_i, C_a, ka0, ka1, ka2 , L_Cal, mH2O, kB, T_ref_L, a0, a1, a2, f, rho_ref, T_ref_C, c1, c2, c3, c4, c5, c6, R_v
 
 
 def update_model_parameters(phi,T, nz,coord, SWVD, form = 'Calonne'):

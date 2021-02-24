@@ -1,5 +1,6 @@
 import numpy as np
-from constant_variables import Z_field, Z_lab
+
+from model.constant_variables import Z_field, Z_lab
 
 def set_up_model_geometry(geom='FieldScale0.5m'):
     """
@@ -40,8 +41,8 @@ def choose_geometry(geom):
     if geom not in ['FieldScale0.5m','LabScale0.02m','layer_based0.5m_2Layer']:
         raise TypeError ('The option for geom can only be: FieldScale0.5m, LabScale0.02m, layer_based0.5m_2Layer')
     if geom =='FieldScale0.5m': 
-        Z = Z_field # height[m]
-        nc = 100  # or 100
+        Z = 0.5 #Z_field # height[m]
+        nc = 100  # or 250
         nz = nc +1  # number of nodes
         coord = np.linspace(0,Z,nz) # [m]
     elif geom =='LabScale0.02m':

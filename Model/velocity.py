@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from model_geometry import node_distance
-from constant_variables import D_rate_literature, a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i, pl1, pl2
+
+from model.model_geometry import node_distance
+from model.constant_variables import D_rate_literature, a_eta, b_eta, eta_0, c_eta, T_fus,g, rho_i, pl1, pl2
 
 def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
     '''

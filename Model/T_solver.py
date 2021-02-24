@@ -1,6 +1,8 @@
-from boundary_conditions import set_boundary_conditions
 import numpy as np
-from constant_variables import L
+
+from model.boundary_conditions import set_boundary_conditions
+from model.constant_variables import L
+
 def solve_for_T(T, rho_v, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, nz, dt, dz):
      '''
      (rhoC_eff+(1-phi)*rho_v_dT * L)* dT/dt = (L* D_eff* rho_v_dT + k-eff)* d^2T/dz^2

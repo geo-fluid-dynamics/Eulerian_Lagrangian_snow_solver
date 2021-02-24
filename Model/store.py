@@ -1,6 +1,6 @@
 import numpy as np
 
-def set_up_matrixes (iter_max,nz):
+def set_up_matrices (iter_max,nz):
     '''
     Set up empty matrices to store computed values
 
@@ -56,3 +56,13 @@ def store_results(all_D_eff, all_k_eff, all_FN, all_rhoC_eff, all_rho_v, all_T, 
     all_t_passed[t] = t_passed
     all_dz[t,:] = dz
     return all_D_eff, all_k_eff, all_FN, all_rhoC_eff, all_rho_v, all_T, all_c,all_phi, all_rho_eff, all_coord, all_v, all_sigma, all_t_passed, all_dz
+
+def save_txt(all_phi, all_coord, all_t_passed, all_v, all_dz, all_c, all_T, all_rho_v):
+    np.savetxt( 'all_phi_vTc_eta_n1_noFDterm', all_phi)#str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_phi'      , all_phi)
+    np.savetxt('all_coord_vTc_eta_n1_noFDterm', all_coord) #str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_coord'    , all_coord)
+    np.savetxt('all_t_passed_vTc_eta_n1_noFDterm', all_t_passed) #str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_t_passed' , all_t_passed)
+    np.savetxt( 'all_v_vTc_eta_n1_noFDterm', all_v)#str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_v'        , all_v)
+    np.savetxt('all_dz_vTc_eta_n1_noFDterm', all_dz) #str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_dz'       , all_dz)
+    np.savetxt('all_c_vTc_eta_n1_noFDterm', all_c) #str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_c'        , all_c)
+    np.savetxt('all_T_vTc_eta_n1_noFDterm', all_T) #str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_T'        , all_T)
+    np.savetxt('all_rho_v_vTc_eta_n1_noFDterm', all_rho_v) #str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_rho_v'    , all_rho_v)

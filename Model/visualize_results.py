@@ -4,10 +4,11 @@ import matplotlib.gridspec as gridspec
 import matplotlib.ticker as ticker
 import matplotlib.cm as cm 
 from matplotlib.ticker import AutoMinorLocator
-from constant_variables import rho_i
 from matplotlib import rcParams
-from figure_1column import figsize_1c , linewidth_1c , labelpad_1c , fontsize_1c , length_1c , width_1c, pad_1c , labelsize_1c , fontsize_legend_1c
 rcParams.update({'figure.autolayout': True})
+
+from model.constant_variables import rho_i
+from model.figure_1column import figsize_1c , linewidth_1c , labelpad_1c , fontsize_1c , length_1c , width_1c, pad_1c , labelsize_1c , fontsize_legend_1c
 
 def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_sigma, all_rho_v, nt,nz,Z,dt,all_dz,all_t_passed,geom, RHO_ini, T_ini, SWVD , SetVel , v_opt, viscosity, plot=True):
     

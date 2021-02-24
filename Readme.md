@@ -15,7 +15,10 @@ output: html_document
 We developed a Eulerian-Lagrangian computational scheme to model the snowpack's coupled transport, phase change and mechanics. Our approach is modular, so that single processes can be *activated* and *deactivated*. This is useful to evaluate the potential superposition and interdependence of all processes. The modularity is realized by splitting the process equations into diffusion (heat and water vapor transport) and advection (mechanical settling) dominated processes. 
 
 ## Requirements
-The code is implemented in Python 3.7.0. A requirements.txt file can be found in the repository.
+A requirements.txt file can be found in the repository. This file can be used to create a virtual environment e.g. via conda.
+
+## Run the code
+There are two options to run the code. Either via the main_snow_model.py file or the snowmodel.ipynb jupyter notebook.
 
 ## Details on the code
 If you want to adjust the computation, so e.g. change the flow law, the routine for velocity computation or deactivate specific modules two locations in the code are relevant:

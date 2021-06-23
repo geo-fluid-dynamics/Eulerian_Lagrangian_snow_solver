@@ -106,13 +106,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-TemperatureProfile.png
-Velocity.png
-Condensationrateprofile.png
-Icevolumefractionprofile.png
-Temperaturegradient.png
-Intervalsofirregulargrid.png
-Icevolumefractionprofile_nonisothermal.png
-/Plots
-/zoom
-/lowres30000
+
+# Annas folder
+/Plots/
+/Bilder/
+/Data/
+/additional/

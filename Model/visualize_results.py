@@ -69,7 +69,7 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     f12_ax2.xaxis.set_tick_params(labelsize = labelsize_1c, length = length_1c, width = width_1c, pad = pad_1c)
     f12_ax2.legend(fontsize = fontsize_legend_1c)
     f12_ax2.grid()
-    fig12.savefig('Depositionrate_Profile' +str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_'+ str(viscosity) +'.png', tight = True, dpi= 300, loc = 'center')
+    fig12.savefig('Depositionrate_Profile' +str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_'+ str(viscosity) +'.png', dpi= 300)
 
 #%% Ice volume fraction
     fig13 = plt.figure(figsize= (figsize_1c))
@@ -89,7 +89,7 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     f13_ax3.yaxis.set_tick_params(labelsize = labelsize_1c, length = length_1c, width = width_1c, pad = pad_1c)
     f13_ax3.legend(fontsize = fontsize_legend_1c)
     f13_ax3.grid()
-    fig13.savefig('Icevolumefraction_Profile' +str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt) + '_' + str(viscosity) +'.png', tight = True, dpi= 300, loc = 'center')
+    fig13.savefig('Icevolumefraction_Profile' +str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt) + '_' + str(viscosity) +'.png', dpi= 300)
 
 #%% Node distances
     fig15 = plt.figure(figsize= (figsize_1c))
@@ -109,7 +109,7 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     f15_ax5.yaxis.set_tick_params(labelsize = labelsize_1c, length = length_1c, width = width_1c, pad = pad_1c)
     f15_ax5.legend(fontsize = fontsize_legend_1c)
     f15_ax5.grid()
-    fig15.savefig('Nodedistance_Profile'+ str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_'  + 'Vel_' + str(v_opt) + '_' + str(viscosity) +'.png',  tight = True, dpi= 300, loc = 'center')
+    fig15.savefig('Nodedistance_Profile'+ str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_'  + 'Vel_' + str(v_opt) + '_' + str(viscosity) +'.png',  dpi= 300)
 
 #%% Velocity
     fig16 = plt.figure(figsize= (figsize_1c))
@@ -130,7 +130,7 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     f16_ax6.yaxis.set_tick_params(labelsize = labelsize_1c, length = length_1c, width = width_1c, pad = pad_1c)    
     f16_ax6.legend(fontsize = fontsize_legend_1c)
     f16_ax6.grid()
-    fig16.savefig('Velocity'+ str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_'+ str(viscosity) +'.png',  tight = True, dpi= 300, loc = 'center')
+    fig16.savefig('Velocity'+ str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_'+ str(viscosity) +'.png',  dpi= 300)
     
 #%% Minimum node distance
     fig17 = plt.figure(figsize= (figsize_1c))
@@ -144,7 +144,7 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     f17_ax7.xaxis.set_tick_params(labelsize = labelsize_1c, length = length_1c, width = width_1c, pad = pad_1c)
     f17_ax7.yaxis.set_tick_params(labelsize = labelsize_1c, length = length_1c, width = width_1c, pad = pad_1c)    
     f17_ax7.grid()
-    fig17.savefig('MinimumNodeDistance'+str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_'+ str(viscosity) +'.png',  tight = True, dpi= 300, loc = 'center')
+    fig17.savefig('MinimumNodeDistance'+str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_'+ str(viscosity) +'.png',  dpi= 300)
 
 #%% PLOT MESH and HEAT MAP Ice Volume Fraction
     fig3 = plt.figure(figsize= (figsize_1c))
@@ -177,7 +177,7 @@ def plot_results( all_T,all_c,all_phi,all_rho_eff, all_N,all_coord,all_v, all_si
     f3_ax1.yaxis.set_ticks(np.linspace(np.min(all_coord), np.max(all_coord), 6))
     f3_ax1.xaxis.set_tick_params(labelsize = labelsize_1c, length = length_1c, width = width_1c, pad = pad_1c)
     f3_ax1.yaxis.set_tick_params(labelsize = labelsize_1c, length = length_1c, width = width_1c, pad = pad_1c)
-    fig3.savefig('IceVolume_Field'+str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_'+ str(viscosity) +'.png', tight=True, dpi= 300)          
+    fig3.savefig('IceVolume_Field'+str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_'+ str(viscosity) +'.png', dpi= 300)          
 
 #%% Water vapor density
     all_rho_v = all_rho_v * 1000 

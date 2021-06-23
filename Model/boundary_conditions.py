@@ -4,15 +4,15 @@ def set_boundary_conditions(T):
 
     Arguments
     -------------
-    T       Temperature values of the previous iteration
+        T       Temperature of the previous iteration
 
     Returns
     -------------
-    T       Temperature values with boundary condition
+        T_b       Temperature with boundary condition
     """
-    b = T
+    T_b = T
     bc_0 = 273   # K at the bottom of the snowpack
     bc_1 = 253   # K snow atmosphere interface
-    b[0] = bc_0
-    b[-1] =  bc_1    
-    return b
+    T_b[0] = bc_0
+    T_b[-1] =  bc_1    
+    return T_b

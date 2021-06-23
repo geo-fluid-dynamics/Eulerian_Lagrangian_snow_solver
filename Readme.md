@@ -1,9 +1,13 @@
 ---
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
 title: "Readme"
 author: "Anna Simson"
 location: "RWTH Aachen Germany"
 email: "simson@aices.rwth-aachen.de"
 date: "04/01/2021"
+header-includes:
+   - \usepackage{bbm}
 output: html_document
 ---
 
@@ -12,7 +16,7 @@ output: html_document
 *This readme is directed to the readers of the paper mentioned above. It is  is meant to be used to reproduce the results.*
 
 ## The project
-We developed a Eulerian-Lagrangian computational scheme to model the snowpack's coupled transport, phase change and mechanics. Our approach is modular, so that single processes can be *activated* and *deactivated*. This is useful to evaluate the potential superposition and interdependence of all processes. The modularity is realized by splitting the process equations into diffusion (heat and water vapor transport) and advection (mechanical settling) dominated processes. 
+We developed a Eulerian-Lagrangian computational scheme to model the snowpack's coupled transport, phase change and mechanics. Our approach is modular, so that single processes can be *activated* and *deactivated*. This is useful to evaluate the potential superposition and interdependence of all processes. The modularity is realized by splitting the process equations into diffusion (heat and water vapor transport) and advection (mechanical settling) dominated processes.
 
 ## Requirements
 A requirements.txt file can be found in the repository. This file can be used to create a virtual environment e.g. via conda.
@@ -69,3 +73,36 @@ mimick *layer-based schemes* only settling active:
 
 After running the code several plots have been generated. The profile plots for temperature, velocity, water vapor density, ice volume fraction, and node distance show the respective values at the start, after one third, and at the end of the simulation time. Additionally, the heat map for ice volume shows its temporal evolution, including the settlement (if active). 
 If you want to save the results of the computation, the functions to save the data to txt files can be activated in main(). 
+
+## Table - not finalized
+
+| Variable | Physical definion | Unit |
+|---|---|---|
+| v | velocity | ms-1|-|
+| v_dz | vertical derivative of settling velocity equivalent to deformation rate | s-1 |
+| coord | mesh coordinates | m|
+| sigma  | vertical stress from the overburdened snowmass | Nm-2 |-|
+|  eta   | snow viscosity| Pas |
+|dz  |  node distance |m |
+| nz  | number of computational nodes | -|
+|n | Glen exponent /coefficient for deformation rate | n=1 : linear stress strain rate, relation                                n=3 non-linear stress strain rate relation |
+| phi  | ice volume fraction |  - |
+| T | Temperature | K| |
+|phi| Ice volume fration | K |
+| k_eff | effective thermal conductivity | Wm-1K-1 |
+| rhoC_eff | specific heat capacity | JK-1m-3 |
+| D_eff | effective diffusion coefficient | m2s-1 |
+| rho_v | saturation water vapor density | kgm-3 |
+| rho_v_dT | derivative of rho_v w.r.t T | kgm-3T-1 |
+| v |  settling velocity | ms-1|
+| v_dz | derivative of v w.r.t z | s-1 |
+| nz |  number of computational nodes | -|
+| dt | time step | s |
+
+| Flag | Decription | Options |
+|---|---|---|
+| v_opt | method for velocity computation | - |
+| viscosity | option how to determine viscosity | 'eta_constant_n1', 'eta_constant_n3 'eta_phi', 'eta_T', 'eta_phiT' |
+| SetVel | settling velocity active or not | 'Y' or 'N' |
+
+      

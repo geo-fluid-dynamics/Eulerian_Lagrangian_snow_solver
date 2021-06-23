@@ -1,13 +1,9 @@
 ---
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
 title: "Readme"
 author: "Anna Simson"
 location: "RWTH Aachen Germany"
 email: "simson@aices.rwth-aachen.de"
 date: "04/01/2021"
-header-includes:
-   - \usepackage{bbm}
 output: html_document
 ---
 
@@ -26,8 +22,8 @@ There are two options to run the code. Either via the main_snow_model.py file or
 
 ## Details on the code
 If you want to adjust the computation, so e.g. change the flow law, the routine for velocity computation or deactivate specific modules two locations in the code are relevant:
-1. the input of main(...)
-2. the modules that solve for temperature (heat transport, diffusion - Module I), deposition rate (water vapor transport, diffusion - Module II) and ice volume fraction combined with mesh coordinates (mechanical settling, advection - Module III), which can all be deactived/activated.
+1. the input of `main(...)` in 'main_snow_model.py'
+2. the modules that solve for temperature (heat transport, diffusion - Module I - 'T_solver.py'), deposition rate (water vapor transport, diffusion - Module II - 'c_solver.py') and ice volume fraction combined with mesh coordinates (mechanical settling, advection - Module III - 'coupled_update_phi_coord'), which can all be deactived/activated.
 
 #### 1. Input options for main()
 - *geom* defines the initial geometry of the snowpack model. Three options ('FieldScale0.5m', 'LabScale0.02m', 'layer_based0.5m_2Layer') are available. 'FieldScale0.5m' is the default.
@@ -36,7 +32,7 @@ If you want to adjust the computation, so e.g. change the flow law, the routine 
 - *SWVD* defines the equations used for saturation water vapor density, which are further explained in the `sat_vap_dens` function in 'model_parameters.py'
 - *SetVel* activate or deactivate mechanical settling. 'Y' active and 'N' inactive
 - *v_opt* defines the option for velocity computation. Five options are available. They are listed and explained in the `settling_vel()` function in 'velocity.py'. 'continuous' is default and 'layer_based' is used to mimick layer based schemes. 
-- *viscosity* defines the option for viscosity forumlation. Five options are available, which are mentioned and explained in the `choose_viscosity` function in 'velocity.py'. 'eta_constant_n1' is the default. 'eta_phiT' reflects viscosity formulations from Vionnet et al. (2012). All viscosity options imply a linear formulation of Glen's flow law except for 'eta_constant_n3', which implies its non-linear version. The `velocity` function in 'velocity.py' automatically accounts for the linear or non-linear form.
+- *viscosity* defines the option for viscosity formulation. Five options are available, which are mentioned and explained in the `choose_viscosity` function in 'velocity.py'. 'eta_constant_n1' is the default. 'eta_phiT' reflects viscosity formulations from Vionnet et al. (2012). All viscosity options imply a linear formulation of Glen's flow law except for 'eta_constant_n3', which implies its non-linear version with n=3. The `velocity` function in 'velocity.py' automatically selects the linear or non-linear form.
 - *it* maximum iteration number after which the computation stops.
 
 #### 2. Deactivate or activate modules

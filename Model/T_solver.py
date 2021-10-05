@@ -1,9 +1,9 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 from model.boundary_conditions import set_boundary_conditions
-from model.constant_variables import L
+from model.constant_variables import L, k_i, rho_i, C_i
 
-def solve_for_T(T, rho_v, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, nz, dt, dz):
+def solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz):
      '''
      (rhoC_eff+(1-phi)*rho_v_dT * L)* dT/dt = (L* D_eff* rho_v_dT + k-eff)* d^2T/dz^2
      Solves 1D diffusion equation for heterogeneous media with implicit method 
@@ -39,49 +39,40 @@ def solve_for_T(T, rho_v, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, nz, dt, dz):
      upper_A = np.zeros(nz-1)
      B = np.zeros([nz,nz])  
      A = np.zeros([nz,nz])              
-     D = np.zeros(nz)
-     Dl = np.zeros(nz)
-     FD_error = np.zeros(nz) 
-     factor_dz = np.zeros(nz-2)
-     beta_left = np.zeros(nz-2)
-     beta_right = np.zeros(nz-2)
-     main_E = np.zeros(nz)
-     lower_E = np.zeros(nz-1)
-     upper_E = np.zeros(nz-1)
-     # need to be considered if lines 103 - 113 would be active
- #    vphi =np.zeros(nz)
- #    C = np.zeros([nz,nz])  
- #    E = np.zeros([nz,nz])
- #    r = np.zeros(nz-1)
- #    main_C = np.zeros(nz)
- #    lower_C = np.zeros(nz-1)
- #    upper_C = np.zeros(nz-1)
- #    velterm = np.zeros(nz)
 
 #%% Matrix A and B          
 ## Set up Values
-     a = (rhoC_eff+L*(1-phi)*rho_v_dT) 
+     a = rhoC_eff  +L*(1-phi)*rho_v_dT  
      beta = k_eff + D_eff*L*rho_v_dT
-     D[1:-1] = dt/((dz[1:]**2 + dz[:-1]**2)/2)
-     # Boundary values of D based on closest dz
-     D[0] = dt/dz[0]**2
-     D[-1] = dt/dz[-1]**2
-         
-## Initialize elements of matrix A (LHS)       
-     Dl = 0.5 * D      # 0.5 accounts for 0.5 in beta_{k+1/2} = -> 0.5 <- * (beta_k+beta_{k+1})       
-     lower_A[:-1] = -Dl[1:-1] * (beta[1:-1] + beta [:-2])    
-     main_A [1:-1] = a[1:-1] + Dl[1:-1]  * (beta[2:] + 2 * beta[1:-1] + beta[:-2])
-     upper_A [1:] = -Dl[1:-1] * (beta[2:] + beta[1:-1]) 
+     #beta_nonweighted = k_eff + D_eff*L*rho_v_dT  
+     dz_nz = np.zeros(nz)
+     dz_nz[:-1]= dz[:]
+     dz_nz[-1] = (dz[-1] - dz[-2])/2 + dz[-1]
+     # weight beta:
+     # beta[0] = beta_nonweighted[0] 
+     # beta[-1] = beta_nonweighted[-1] 
+
+     # beta[1:-1] = (beta_nonweighted[1:-1] * dz_nz[1:-1] + beta_nonweighted[:-2] * dz_nz[:-2])/ ( dz_nz[1:-1] + dz_nz[:-2]) # beta_nonweighted * dz_nz
+     # constant beta profile
+     # beta[:50] = k_i *0.5
+     # beta[50:] = k_i *0.4
+## Elements of matrix A (LHS) 
+     main_A [1:-1] = a[1:-1] + dt*2*2 * beta[1:-1]/(dz_nz[1:-1]**2+dz_nz[:-2]**2)
+     for i in range(1,nz-1): #k+1
+          upper_A [i] = - dt *((beta[i+1]- beta[i-1]))/(dz_nz[i]+ dz_nz[i-1])**2 - dt *(2* beta[i])/(dz_nz[i]**2+ dz_nz[i-1]**2) *(1- (dz_nz[i]- dz_nz[i-1])/(dz_nz[i]+ dz_nz[i-1]))
+     for i in range(0,nz-2): #k-1
+          lower_A[i] =  dt *(beta[i+2] - beta[i])/(dz_nz[i+1]+ dz_nz[i])**2 - dt *(2* beta[i+1])/(dz_nz[i+1]**2+ dz_nz[i]**2) *(1+ (dz_nz[i+1]- dz_nz[i])/(dz_nz[i+1]+ dz_nz[i]))
+
      main_A[0] =  1
      upper_A[0] = 0
      main_A[-1] = 1
-     lower_A [-1] = 0
+     lower_A[-1] = 0
 
 ### Set up tridiagonal Matrix A and solve for new T  
      A = np.zeros([nz,nz])          
      A = np.diag(np.ones(nz)*main_A,k=0) +np.diag(np.ones(nz-1)*lower_A,k=-1) +\
      np.diag(np.ones(nz-1)*upper_A,k=1)
-     
+
 ## Set up tridiagonal matrix B (RHS)     
      B = np.diag(np.ones(nz)*(a),k=0)
      b = T
@@ -89,30 +80,6 @@ def solve_for_T(T, rho_v, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, nz, dt, dz):
      
 ### Apply boundary condition
      b = set_boundary_conditions(b)      
-     
-#%% Set up matrix E - accounting for Gird-Error-Term
-     factor_dz = (dz[1:]-dz[:-1]) /  (dz[1:]+ dz[:-1]) / (((dz[1:]**2 + dz[:-1]**2)/2))
-     beta_left = (0.5 *(beta[2:] + beta[1:-1]))
-     beta_right = (0.5 * (beta[1:-1] + beta [:-2]))
-     main_E[1:-1]  =( factor_dz * beta_right- factor_dz * beta_left ) 
-     lower_E[:-1] = -factor_dz * beta_right
-     upper_E[1:] = factor_dz * beta_left     
-     E = np.diag(np.ones(nz)*(main_E),k=0) +np.diag(np.ones(nz-1)*(lower_E),k=-1) + np.diag(np.ones(nz-1)*(upper_E),k=1)  
-     FD_error = np.dot(E,T)
-     b -= FD_error    
-     
-#%% Not considered in the paper! Set up matrix C - account for settling velocity
-     # vphi = phi*v     
-     # r = L* rho_v[1:-1]/((dz[1:]+dz[:-1]))
-     # main_C[0] = 2 *rho_v[0] / (2 * dz[0])
-     # main_C[-1] =  - rho_v[-1] / ( 2* dz[-1])
-     # upper_C[1:] = -r
-     # lower_C[:-1] = r
-     # upper_C[0] = -1 *rho_v[0] / (2 * dz[0])
-     # lower_C[-1] = 2 * rho_v[-1] / ( 2* dz[-1])
-     # C = np.diag(np.ones(nz)*(main_C),k=0 )+np.diag(np.ones(nz-1)*(lower_C),k=-1) + np.diag(np.ones(nz-1)*(upper_C),k=1) 
-     # velterm = np.dot(C, vphi)          
-     # b = b - velterm
 
      T_new = np.linalg.solve(A,b)
      return T_new,  a, beta

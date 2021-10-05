@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt 
 import numpy as np
 from model import *
-
+import time
 def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht',\
-    SetVel = 'Y', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 17405):
+    SetVel = 'Y', v_opt = 'continuous' , viscosity = 'eta_constant_n1', g =1, it = 299040):
     '''
     main snow model
     
@@ -29,19 +29,28 @@ def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_in
     c = np.zeros(nz)
     [D_eff, k_eff, rhoC_eff, rho_v, rho_v_dT] = update_model_parameters(phi, T, nz, coord, SWVD)
     [v, v_dz, sigma] = settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity)
-
+    plt.ion()
+    fig = plt.figure()
+    ax1 = fig.add_subplot(211)
+    ax2 = fig.add_subplot(212)
+    ax1.plot(T, coord, label='T at t = ' + str(t_passed))
+    ax1.set_xlabel('T [-]')
+    ax1.set_ylabel('Coord [m]')
+  #  ax2.plot(dz[1:]-dz[:-1], coord[1:-1], label=‘rhoceff at t = ’ + str(t_passed))
+    ax2.set_xlabel('keff [-]')
+    ax2.set_ylabel('Coord [m]' )
+    plt.show()
     for t in range(iter_max):
-        # if t_passed > 3600*(24*2) : # e.g. 2 days
-        #     to_stop = 5
+
         print(t)
         [all_D_eff, all_k_eff, all_FN, all_rhoC_eff, all_rho_v, all_T,all_c,all_phi,  all_rho_eff, all_coord, all_v, all_sigma, all_t_passed,  all_dz] \
             =  store_results(all_D_eff, all_k_eff, all_FN, all_rhoC_eff, all_rho_v, all_T, all_c,all_phi, all_rho_eff, all_coord, \
                 all_v, all_sigma, all_t_passed,all_dz, D_eff, k_eff, FN, phi, rhoC_eff, rho_v, T, c, rho_eff, coord, v, sigma,  t, iter_max, nz,dz,t_passed)        
         T_prev = T
         # Module I solves for temperature - Diffusion
-        (T, a, b) = solve_for_T(T, rho_v,rho_v_dT, k_eff, D_eff, rhoC_eff, phi, v, nz, dt, dz)     
+        (T, a, b) = solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz)     
         # Module II solves for deposition rate - Diffusion
-        c = solve_for_c(T, T_prev, phi, k_eff, rhoC_eff, D_eff, rho_v, rho_v_dT, v, v_dz, nz, dt, dz)        
+        c = solve_for_c(T, T_prev, phi, D_eff,  rho_v_dT, nz, dt, dz)        
         # Module III solves for ice volume fraction and coordinate update - Advection
         (phi, coord, dz, v_dz, v, sigma) = coupled_update_phi_coord(T, c, dt, nz, phi, v_dz, coord, SetVel, v_opt, viscosity)   
         [D_eff, k_eff, rhoC_eff, rho_v, rho_v_dT] = update_model_parameters(phi, T, nz, coord, SWVD)
@@ -50,20 +59,26 @@ def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_in
         ## find iteration number for specific time by placing a breakpoint at line 58:
 
         # activate next line if Module I and II are deactivated
-        #dt = 100
+        # dt = 100
         # deactivate next line if Module I and/or II are deactivated
-        [dt, FN] = comp_dt(t_passed, dz, a, b)  
-        
+        [dt, FN] = comp_dt(t_passed, dz, a, b, v)  
+        if t%20000==0:
+            ax1.plot(T, coord, label='T at t = ' + str(t_passed))
+            ax1.set_xlabel('T [K]')
+            ax1.set_ylabel('Coord [m]')
+            ax2.plot(dz[1:]/dz[:-1], coord[1:-1], label='rhoceff at t = ' + str(t_passed))
+            plt.show()
+            time.sleep(1)
+        if t_passed > 3600*24*2:
+            h =5
     # uncomment to save data in txt files    
-    #save_txt(all_phi, all_coord, all_t_passed, all_v, all_dz, all_c, all_T, all_rho_v)
-### Visualize results
     plot_results( all_T, all_c, all_phi, all_rho_eff, all_FN, all_coord, all_v, all_sigma,\
         all_rho_v, iter_max, nz, Z, dt, all_dz,all_t_passed, geom, RHO_ini, T_ini, SWVD , SetVel , v_opt, viscosity, plot=True)
+
+
+    save_txt(all_phi, all_coord, all_t_passed, all_v, all_dz, all_c, all_T, all_rho_v,nz)
+### Visualize results
     return all_T, all_D_eff, all_FN, all_rho_v, all_k_eff, all_c, all_phi,  all_rho_eff, all_coord,all_v, all_sigma, all_t_passed, all_dz
 
 if __name__ == '__main__':
     main()
-        
-        
-        
-    

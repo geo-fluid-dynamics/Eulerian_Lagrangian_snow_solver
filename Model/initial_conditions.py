@@ -17,8 +17,10 @@ def set_initial_conditions(nz, Z, RHO_ini, T_ini):
                 'RHO_Gaussian' ice crust in form of a gaussian
                 'RHO_linear_0-917' linear snow density profile from no ice to 100% ice
                 'RHO_2Layer_Continuous_smooth' 2 snow layers of varying densities. Their transition is smoothed out across 5 nodes
-                'RHO_2layer_based' mimicks layer based scheme
-                'RHO_2layer' two layers with distinct snow density and sharp transition between them
+                'RHO_2Layer_layer_based' mimicks layer based scheme
+                'RHO_2Layer' two layers with distinct snow density and sharp transition between them
+                'RHO_2Layer_inverted' two layers with distinct snow density and sharp transition between them
+                'RHO_3Layer_Arctic' three layers based on arctic snowpack 
     
     Returns
     -------- 
@@ -56,7 +58,7 @@ def set_initial_conditions(nz, Z, RHO_ini, T_ini):
         rho_eff = rho_eff * initial
     elif RHO_ini == "RHO_const_250":
         # constant snow density of 250 kgm-3
-        initial = 250
+        initial =250
         rho_eff = np.ones(nz)
         rho_eff = rho_eff * initial
     elif RHO_ini == "RHO_Hansen":
@@ -101,6 +103,12 @@ def set_initial_conditions(nz, Z, RHO_ini, T_ini):
         x1 = 0.5
         nz1 = int(x1 * nz)
         nz2 = nz
+        if nz == 51:
+            rho_eff[0] = 150
+            for i in range(nz1):
+                rho_eff[i] = 150
+            rho_eff[nz1] = 112.5
+            rho_eff[nz1 + 1 : nz2] = 75
         if nz == 101:
             rho_eff[0] = 150
             for i in range(nz1 - 1):
@@ -131,6 +139,24 @@ def set_initial_conditions(nz, Z, RHO_ini, T_ini):
             rho_eff[nz1] = 112.5
             rho_eff[nz1 + 1 : nz1 + 11] = fill_list2[1:]
             rho_eff[nz1 + 11 :] = 75
+        elif nz == 1001:
+            nz_1000 = 1001
+            z_1000 = np.linspace(0,0.5,1001)
+            x1_1000 = 0.5
+            nz1_1000 = int(x1_1000 * nz_1000)
+            nz2_1000 = nz_1000
+            rho_eff_1000 = np.zeros(101)
+            rho_eff_1000[0] = 150
+            rho_eff_1000 = np.ones(nz_1000)  # *75
+            rho_eff_1000[0] = 150
+            for i in range(nz1_1000 - 19):
+                rho_eff_1000[i] = 150
+            fill_list1 = np.linspace(150, 112.5, 21)
+            fill_list2 = np.linspace(112.5, 75, 21)
+            rho_eff_1000[nz1_1000 - 20 : nz1_1000] = fill_list1[:-1]
+            rho_eff_1000[nz1_1000] = 112.5
+            rho_eff_1000[nz1_1000 + 1 : nz1_1000 + 21] = fill_list2[1:]
+            rho_eff_1000[nz1_1000 + 21 :] = 75
         else:
             print(
                 "for this number of computational nodes nz is no initial condition for snow density aviailable"
@@ -150,6 +176,60 @@ def set_initial_conditions(nz, Z, RHO_ini, T_ini):
         nz1 = int(x1 * nz)
         rho_eff[:nz1] = 150
         rho_eff[nz1:] = 75
+    elif RHO_ini == "RHO_2Layer_inverted":
+        # 2 layers with sharp transition of the distinct densities
+        rho_eff = np.ones(nz)
+        x1 = 0.5
+        nz1 = int(x1 * nz)
+        rho_eff[:nz1] = 75
+        rho_eff[nz1:] = 150
+    elif RHO_ini == "RHO_3Layer_Arctic":
+        # 2 layers with sharp transition of the distinct densities
+        rho_eff = np.ones(nz)
+        x1 = 0.33
+        x2 = 0.66
+        nz1 = int(x1 * nz)
+        nz2 = int(x2 * nz)
+        rho_eff[:nz1] = 200
+        rho_eff[nz1:nz2] = 300
+        rho_eff[nz2:] = 400
+        rho_eff[:2] = 917
+    elif RHO_ini == 'testcase_thin_layer':
+        if nz <10:
+            raise ValueError ('for testcase_thin_layer 10 nodes are required at minimum ')
+        rho_eff = np.ones(nz)
+        x1 = 0.02/0.5
+        x2 = 0.1025/0.5
+        x3 = 0.185/0.5
+        x4 = 0.2675/0.5
+        x5 = 0.35/0.5
+        x6 = 0.4/0.5
+        x7 = 0.445/0.5
+        x8 = 0.48/0.5
+        x9 = 0.49/0.5
+        x10 = 0.5/0.5
+        nz1 = int(x1 * nz)
+        nz2 = int(x2 * nz)
+        nz3 = int(x3 * nz)
+        nz4 = int(x4 * nz)
+        nz5 = int(x5 * nz)
+        nz6 = int(x6 * nz)
+        nz7 = int(x7 * nz)
+        nz8 = int(x8 * nz)
+        nz9 = int(x9 * nz)
+        nz10 = int(x10 * nz)
+        rho_eff[:nz1] = 400
+        rho_eff[nz1:nz2] = 390
+        rho_eff[nz2:nz3] = 340
+        rho_eff[nz3:nz4] = 290
+        rho_eff[nz4:nz5] = 260
+        rho_eff[nz5:nz6] = 240
+        rho_eff[nz6:nz7] = 190
+        rho_eff[nz7:nz8] = 160
+        rho_eff[nz8:nz9] = 130
+        rho_eff[nz9:] = 100
+
+
     else:
         raise ValueError("Input initial snow density profile")
     return T, rho_eff

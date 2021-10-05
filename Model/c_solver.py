@@ -83,23 +83,6 @@ def solve_for_c(T, T_prev, phi, D_eff, rho_v_dT, nz, dt, dz):
     part1 = np.dot(H,T)             
     part2 = np.dot(G,T_prev)
     c = -(part1 + part2 )
-
-    
-#%% Not considered in the paper! Term from settling velocity p_v^eq *d/dz (phi v) 
-    ##c = d/dz(D_eff * rho_v_dT dT/dz) - (1-phi) *rho_v_dT * dT/dt [- rho_v^eq * nabla (phi * v)] <- last term in square brackets results from incorporation of settling velocity
-
-    # vphi = phi*v     
-    # r    = rho_v[1:-1]/((dz[1:]+dz[:-1]))
-    # main_F[1:-1] = 0
-    # main_F[0] = rho_v[0] /  dz[0]
-    # main_F[-1] =  - rho_v[-1] / ( 2* dz[-1])
-    # upper_F[1:] = -r
-    # lower_F[:-1] = r
-    # upper_F[0] = -rho_v[0] / (2 * dz[0])
-    # lower_F[-1] =  rho_v[-1] / (  dz[-1])
-    # F = np.diag(np.ones(nz)*(main_F),k=0 )+np.diag(np.ones(nz-1)*(lower_F),k=-1) + np.diag(np.ones(nz-1)*(upper_F),k=1) 
-    # velterm = np.dot(F, vphi)
-    # c = c - velterm
    
     return c
 

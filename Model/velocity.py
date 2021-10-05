@@ -50,7 +50,7 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
             # 2 layer case with 3 computational nodes
             # mimicks layer based scheme
             # only works with model geometry geom= layer_based0.5m_2Layer'
-            if nz is not 3:
+            if nz != 3:
                 raise IndexError(
                     "For layer_based velocity only 3 computational nodes are allowed"
                 )
@@ -110,7 +110,7 @@ def choose_viscosity(T, phi, viscosity, dz, nz):
         )
         # apply power law to restrict ice volume growth tp <0.95
         eta = etatest1 * restrict
-    elif viscosity == "eta_phi":  # visocosity controlled by ice volume fraction
+    elif viscosity == "eta_phi":  # visocosity controllfed by ice volume fraction
         eta = (
             eta_0
             * rho_i

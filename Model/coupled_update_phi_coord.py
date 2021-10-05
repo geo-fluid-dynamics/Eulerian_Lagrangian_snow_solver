@@ -10,14 +10,14 @@ def coupled_update_phi_coord(T, c, dt, nz, phi, v_dz, coord, SetVel, v_opt, visc
     Coupled update for ice volume fraction and mesh coordinates
     """
 
-    phi_new = update_phi(c, dt, nz, phi, v_dz, coord)
+    phi_new = update_phi(c, dt, nz, phi, v_dz)
     (coord_new, dz, v_dz_new, v_new, sigma) = update_coord(
-        T, c, dt, nz, phi_new, coord, SetVel, v_opt, viscosity
+        T, c, dt, nz, phi, coord, SetVel, v_opt, viscosity
     )
     return phi_new, coord_new, dz, v_dz_new, v_new, sigma
 
 
-def update_phi(c, dt, nz, phi, v_dz, coord):
+def update_phi(c, dt, nz, phi, v_dz):
     """
     update ice volume fraction phi_new
     """

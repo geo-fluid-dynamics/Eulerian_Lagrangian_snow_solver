@@ -3,7 +3,7 @@ import numpy as np
 from model import *
 import time
 def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht',\
-    SetVel = 'Y', v_opt = 'continuous' , viscosity = 'eta_constant_n1', g =1, it = 299040):
+    SetVel = 'Y', v_opt = 'continuous' , viscosity = 'eta_constant_n1', g =1, it = 1729):
     '''
     main snow model
     
@@ -48,9 +48,9 @@ def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_in
                 all_v, all_sigma, all_t_passed,all_dz, D_eff, k_eff, FN, phi, rhoC_eff, rho_v, T, c, rho_eff, coord, v, sigma,  t, iter_max, nz,dz,t_passed)        
         T_prev = T
         # Module I solves for temperature - Diffusion
-        (T, a, b) = solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz)     
+        #(T, a, b) = solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz)     
         # Module II solves for deposition rate - Diffusion
-        c = solve_for_c(T, T_prev, phi, D_eff,  rho_v_dT, nz, dt, dz)        
+       # c = solve_for_c(T, T_prev, phi, D_eff,  rho_v_dT, nz, dt, dz)        
         # Module III solves for ice volume fraction and coordinate update - Advection
         (phi, coord, dz, v_dz, v, sigma) = coupled_update_phi_coord(T, c, dt, nz, phi, v_dz, coord, SetVel, v_opt, viscosity)   
         [D_eff, k_eff, rhoC_eff, rho_v, rho_v_dT] = update_model_parameters(phi, T, nz, coord, SWVD)
@@ -59,9 +59,9 @@ def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_in
         ## find iteration number for specific time by placing a breakpoint at line 58:
 
         # activate next line if Module I and II are deactivated
-        # dt = 100
+        dt = 100
         # deactivate next line if Module I and/or II are deactivated
-        [dt, FN] = comp_dt(t_passed, dz, a, b, v)  
+        #[dt, FN] = comp_dt(t_passed, dz, a, b, v)  
         if t%20000==0:
             ax1.plot(T, coord, label='T at t = ' + str(t_passed))
             ax1.set_xlabel('T [K]')
@@ -76,7 +76,7 @@ def main(geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_in
         all_rho_v, iter_max, nz, Z, dt, all_dz,all_t_passed, geom, RHO_ini, T_ini, SWVD , SetVel , v_opt, viscosity, plot=True)
 
 
-    save_txt(all_phi, all_coord, all_t_passed, all_v, all_dz, all_c, all_T, all_rho_v,nz)
+    save_txt(all_phi, all_coord, all_t_passed, all_v, all_dz, all_c, all_T, all_rho_v)
 ### Visualize results
     return all_T, all_D_eff, all_FN, all_rho_v, all_k_eff, all_c, all_phi,  all_rho_eff, all_coord,all_v, all_sigma, all_t_passed, all_dz
 

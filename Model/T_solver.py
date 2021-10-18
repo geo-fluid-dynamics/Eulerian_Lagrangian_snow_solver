@@ -3,12 +3,10 @@ import matplotlib.pyplot as plt
 from model.boundary_conditions import set_boundary_conditions
 from model.constant_variables import L, k_i, rho_i, C_i
 
-def solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz):
+def solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz, Eterms):
      '''
      (rhoC_eff+(1-phi)*rho_v_dT * L)* dT/dt = (L* D_eff* rho_v_dT + k-eff)* d^2T/dz^2
      Solves 1D diffusion equation for heterogeneous media with implicit method 
-     Equation of the form : a * dT/dt = nabla (beta(x) nabla T) + velterm + FD_error
-     in matrix form :       A T_k^{n+1} = B T_k^n  + C ((phi * v)_k^n) + E T_k^n -> to solve 
 
      Arguments
      ----------
@@ -34,13 +32,16 @@ def solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz):
      # Initialize variables    
      a = np.zeros(nz)
      beta = np.zeros(nz)
-     main_A = np.zeros(nz)
-     lower_A =  np.zeros(nz-1)
-     upper_A = np.zeros(nz-1)
-     B = np.zeros([nz,nz])  
-     A = np.zeros([nz,nz])              
+     main_AT = np.zeros(nz)
+     lower_AT =  np.zeros(nz-1)
+     upper_AT = np.zeros(nz-1)
+     BT = np.zeros([nz,nz])  
+     AT = np.zeros([nz,nz])           
+     ET = np.zeros([nz,nz])              
+     upper_ET = np.zeros(nz-1)
+     lower_ET =  np.zeros(nz-1)
 
-#%% Matrix A and B          
+#%% Matrix AT, ET and BT          
 ## Set up Values
      a = rhoC_eff  +L*(1-phi)*rho_v_dT  
      beta = k_eff + D_eff*L*rho_v_dT
@@ -49,37 +50,41 @@ def solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz):
      dz_nz[:-1]= dz[:]
      dz_nz[-1] = (dz[-1] - dz[-2])/2 + dz[-1]
      # weight beta:
-     # beta[0] = beta_nonweighted[0] 
-     # beta[-1] = beta_nonweighted[-1] 
+   # beta[0] = beta_nonweighted[0] 
+   # beta[-1] = beta_nonweighted[-1] 
+   # beta[1:-1] = (beta_nonweighted[1:-1] * dz_nz[1:-1] + beta_nonweighted[:-2] * dz_nz[:-2])/ ( dz_nz[1:-1] + dz_nz[:-2]) # beta_nonweighted * dz_nz
 
-     # beta[1:-1] = (beta_nonweighted[1:-1] * dz_nz[1:-1] + beta_nonweighted[:-2] * dz_nz[:-2])/ ( dz_nz[1:-1] + dz_nz[:-2]) # beta_nonweighted * dz_nz
-     # constant beta profile
-     # beta[:50] = k_i *0.5
-     # beta[50:] = k_i *0.4
-## Elements of matrix A (LHS) 
-     main_A [1:-1] = a[1:-1] + dt*2*2 * beta[1:-1]/(dz_nz[1:-1]**2+dz_nz[:-2]**2)
+## Elements of matrix AT (LHS) 
+     main_AT [1:-1] = a[1:-1] + dt*2*2 * beta[1:-1]/(dz_nz[1:-1]**2+dz_nz[:-2]**2)
      for i in range(1,nz-1): #k+1
-          upper_A [i] = - dt *((beta[i+1]- beta[i-1]))/(dz_nz[i]+ dz_nz[i-1])**2 - dt *(2* beta[i])/(dz_nz[i]**2+ dz_nz[i-1]**2) *(1- (dz_nz[i]- dz_nz[i-1])/(dz_nz[i]+ dz_nz[i-1]))
+          upper_AT [i] = - dt *((beta[i+1]- beta[i-1]))/(dz_nz[i]+ dz_nz[i-1])**2 - dt *(2* beta[i])/(dz_nz[i]**2+ dz_nz[i-1]**2) 
+          upper_ET[i] = dt *(2* beta[i])/(dz_nz[i]**2+ dz_nz[i-1]**2) * (dz_nz[i]- dz_nz[i-1])/(dz_nz[i]+ dz_nz[i-1])
      for i in range(0,nz-2): #k-1
-          lower_A[i] =  dt *(beta[i+2] - beta[i])/(dz_nz[i+1]+ dz_nz[i])**2 - dt *(2* beta[i+1])/(dz_nz[i+1]**2+ dz_nz[i]**2) *(1+ (dz_nz[i+1]- dz_nz[i])/(dz_nz[i+1]+ dz_nz[i]))
+          lower_AT[i] =  dt *(beta[i+2] - beta[i])/(dz_nz[i+1]+ dz_nz[i])**2  - dt *(2* beta[i+1])/(dz_nz[i+1]**2+ dz_nz[i]**2)
+          lower_ET[i] = - dt *(2* beta[i+1])/(dz_nz[i+1]**2+ dz_nz[i]**2) *  (dz_nz[i+1]- dz_nz[i])/(dz_nz[i+1]+ dz_nz[i])
 
-     main_A[0] =  1
-     upper_A[0] = 0
-     main_A[-1] = 1
-     lower_A[-1] = 0
+     main_AT[0] =  1
+     upper_AT[0] = 0
+     main_AT[-1] = 1
+     lower_AT[-1] = 0
+     upper_ET[0] = 0
+     lower_ET[-1] = 0
 
-### Set up tridiagonal Matrix A and solve for new T  
-     A = np.zeros([nz,nz])          
-     A = np.diag(np.ones(nz)*main_A,k=0) +np.diag(np.ones(nz-1)*lower_A,k=-1) +\
-     np.diag(np.ones(nz-1)*upper_A,k=1)
+### Set up tridiagonal Matrix AT and solve for new T  
+     AT = np.diag(np.ones(nz)*main_AT,k=0) +np.diag(np.ones(nz-1)*lower_AT,k=-1) +\
+     np.diag(np.ones(nz-1)*upper_AT,k=1)
+### Set up Error matrix ET
+     ET = np.diag(np.ones(nz-1)*lower_ET,k=-1) + np.diag(np.ones(nz-1)*upper_ET,k=1)    
 
-## Set up tridiagonal matrix B (RHS)     
-     B = np.diag(np.ones(nz)*(a),k=0)
+## Set up tridiagonal matrix BT (RHS)     
+     BT = np.diag(np.ones(nz)*(a),k=0)
      b = T
-     b = np.dot(B,b)
+     b = np.dot(BT,b)
      
 ### Apply boundary condition
      b = set_boundary_conditions(b)      
-
-     T_new = np.linalg.solve(A,b)
+     if Eterms:
+          T_new = np.linalg.solve((AT+ET),b)
+     else:
+         T_new = np.linalg.solve(AT,b) 
      return T_new,  a, beta

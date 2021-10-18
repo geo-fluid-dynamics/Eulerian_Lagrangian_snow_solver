@@ -7,7 +7,7 @@ date: "04/01/2021"
 output: html_document
 ---
 
-# Readme Vers 1.0
+# Readme Vers 1.1
 ### Code corresponds to the model introduced in the paper: *Elements of future snowpack modeling - part 2: A modular and extendable Eulerian-Lagrangian numerical scheme for coupling transport, phase changes and mechanics*
 *This readme is directed to the readers of the paper mentioned above. It is  is meant to be used to reproduce the results.*
 
@@ -33,6 +33,7 @@ If you want to adjust the computation, so e.g. change the flow law, the routine 
 - *SetVel* activate or deactivate mechanical settling. 'Y' active and 'N' inactive
 - *v_opt* defines the option for velocity computation. Five options are available. They are listed and explained in the `settling_vel()` function in 'velocity.py'. 'continuous' is default and 'layer_based' is used to mimick layer based schemes. 
 - *viscosity* defines the option for viscosity formulation. Five options are available, which are mentioned and explained in the `choose_viscosity` function in 'velocity.py'. 'eta_constant_n1' is the default. 'eta_phiT' reflects viscosity formulations from Vionnet et al. (2012). All viscosity options imply a linear formulation of Glen's flow law except for 'eta_constant_n3', which implies its non-linear version with n=3. The `velocity` function in 'velocity.py' automatically selects the linear or non-linear form.
+- *Eterms* if True error terms ET and Ec that account for the deforming grid are accounted for, if False ET and Ec are excluded.
 - *it* maximum iteration number after which the computation stops.
 
 #### 2. Deactivate or activate modules
@@ -46,23 +47,23 @@ Note that if Module II and Module I are deactivated no diffusion is simulated. T
 - open 'main_snow_model.py'
 
 *default combination* with all processes (Module I, II and III) activated:
-- paste the following options in the function input of main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'Y', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 17406`
+- paste the following options in the function input of main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'Y', v_opt = 'continuous' , viscosity = 'eta_constant_n1', Eterms = True, it = 17406`
 - run 'main_snow_model.py' in Python
 
 only *heat transport* active:
-- paste the following options in the function input of main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'N', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 7265` 
+- paste the following options in the function input of main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'N', v_opt = 'continuous' , viscosity = 'eta_constant_n1',Eterms = True, it = 7265` 
 - deactivate (comment) Module II to solve for deposition rate
 - run 'main_snow_model.py' in Python
 
 *Heat transport and vapor transport* active, settling inactive:
-- paste the following options in the function inputof main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'N', v_opt = 'continuous' , viscosity = 'eta_constant_n1', it = 7278` 
+- paste the following options in the function inputof main(): `geom = 'FieldScale0.5m', RHO_ini = 'RHO_2Layer_Continuous_smooth', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'N', v_opt = 'continuous' , viscosity = 'eta_constant_n1',Eterms = True, it = 7278` 
 - activate (uncomment) Module I and II to solve for temperature and deposition rate
 - The ice crust simulation from Hansen and Foslien (2015) case is reflected by choosing 'RHO_ini=' `RHO_Hansen`
 - run 'main_snow_model.py' in Python
 
 mimick *layer-based schemes* only settling active:
 - deactivate (comment) Module I and Module II and paste the following options in the function input of main():`[dt, CFL] = comp_dt(t_passed, dz, a, b)` in line 64, activate `dt = 100` in line 62.
-- paste the following options in the main() input : `geom ='layer_based0.5m_2Layer', RHO_ini = 'RHO_2Layer_layer_based', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'Y', v_opt = 'layer_based' , viscosity = 'eta_constant_n1', it = 1732`
+- paste the following options in the main() input : `geom ='layer_based0.5m_2Layer', RHO_ini = 'RHO_2Layer_layer_based', T_ini = 'T_const_263', SWVD = 'Libbrecht', SetVel = 'Y', v_opt = 'layer_based' , viscosity = 'eta_constant_n1',Eterms = True, it = 1732`
 - run 'main_snow_model.py' in Python
 
 ## Output
@@ -100,5 +101,7 @@ If you want to save the results of the computation, the functions to save the da
 | v_opt | method for velocity computation | - |
 | viscosity | option how to determine viscosity | 'eta_constant_n1', 'eta_constant_n3 'eta_phi', 'eta_T', 'eta_phiT' |
 | SetVel | settling velocity active or not | 'Y' or 'N' |
+| Eterms | mesh error terms included or excluded | True or False |
+
 
       

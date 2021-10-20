@@ -122,28 +122,30 @@ def store_results(
     )
 
 
-def save_txt(all_phi, all_coord, all_t_passed, all_v, all_dz, all_c, all_T, all_rho_v, nz):
+def save_txt(
+    all_phi, all_coord, all_t_passed, all_v, all_dz, all_c, all_T, all_rho_v, nz
+):
     np.savetxt(
-        'all_phi' + '_' + str(nz), all_phi
+        "all_phi" + "_" + str(nz), all_phi
     )  # str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_phi'      , all_phi)
     np.savetxt(
-        'all_coord' + '_' + str(nz), all_coord
+        "all_coord" + "_" + str(nz), all_coord
     )  # str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_coord'    , all_coord)
     np.savetxt(
-        'all_t_passed' + '_' + str(nz), all_t_passed
+        "all_t_passed" + "_" + str(nz), all_t_passed
     )  # str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_t_passed' , all_t_passed)
     np.savetxt(
-        'all_v' + '_' + str(nz), all_v
+        "all_v" + "_" + str(nz), all_v
     )  # str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_v'        , all_v)
     np.savetxt(
-        'all_dz' + '_' + str(nz), all_dz
+        "all_dz" + "_" + str(nz), all_dz
     )  # str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_dz'       , all_dz)
     np.savetxt(
-        "all_c"+ '_' + str(nz), all_c
+        "all_c" + "_" + str(nz), all_c
     )  # str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_c'        , all_c)
     np.savetxt(
-        'all_T' + '_' + str(nz), all_T
+        "all_T" + "_" + str(nz), all_T
     )  # str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_T'        , all_T)
     np.savetxt(
-        "all_rho_v" + '_' + str(nz), all_rho_v
+        "all_rho_v" + "_" + str(nz), all_rho_v
     )  # str(geom) + '_' + str(RHO_ini) + '_' + str(T_ini) + '_' + 'Vel_' + str(v_opt)  + '_' + str(viscosity) + '_' + str(it) + '_all_rho_v'    , all_rho_v)

@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-
 from model.model_geometry import node_distance
 from model.constant_variables import (
     D_rate_literature,
@@ -221,4 +219,3 @@ def velocity(sigma, eta, dz, nz, viscosity):
         D_rate[1:] * dz[:]
     )  # Integrate deformation rates [s-1] in space to derive velocity [ms-1]
     return v, v_dz
-

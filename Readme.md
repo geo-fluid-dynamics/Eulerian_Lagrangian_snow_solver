@@ -71,7 +71,7 @@ mimick *layer-based schemes* only settling active:
 After running the code several plots have been generated. The profile plots for temperature, velocity, water vapor density, ice volume fraction, and node distance show the respective values at the start, after one third, and at the end of the simulation time. Additionally, the heat map for ice volume shows its temporal evolution, including the settlement (if active). 
 If you want to save the results of the computation, the functions to save the data to txt files can be activated in main(). 
 
-## Table - not finalized
+## Table
 
 | Variable | Physical definion | Unit |
 |---|---|---|

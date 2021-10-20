@@ -106,9 +106,3 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-
-# Annas folder
-/Plots/
-/Bilder/
-/Data/
-/additional/

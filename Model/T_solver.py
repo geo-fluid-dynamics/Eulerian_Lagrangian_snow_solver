@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from model.boundary_conditions import set_boundary_conditions
-from model.constant_variables import L, k_i, rho_i, C_i
+from model.constant_variables import L
 
 def solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz, Eterms):
      '''
@@ -45,34 +45,32 @@ def solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz, Eterms):
 ## Set up Values
      a = rhoC_eff  +L*(1-phi)*rho_v_dT  
      beta = k_eff + D_eff*L*rho_v_dT
-     #beta_nonweighted = k_eff + D_eff*L*rho_v_dT  
      dz_nz = np.zeros(nz)
      dz_nz[:-1]= dz[:]
      dz_nz[-1] = (dz[-1] - dz[-2])/2 + dz[-1]
-     # weight beta:
-   # beta[0] = beta_nonweighted[0] 
-   # beta[-1] = beta_nonweighted[-1] 
-   # beta[1:-1] = (beta_nonweighted[1:-1] * dz_nz[1:-1] + beta_nonweighted[:-2] * dz_nz[:-2])/ ( dz_nz[1:-1] + dz_nz[:-2]) # beta_nonweighted * dz_nz
-
-## Elements of matrix AT (LHS) 
+# Elements of matrix AT (LHS) 
      main_AT [1:-1] = a[1:-1] + dt*2*2 * beta[1:-1]/(dz_nz[1:-1]**2+dz_nz[:-2]**2)
      for i in range(1,nz-1): #k+1
           upper_AT [i] = - dt *((beta[i+1]- beta[i-1]))/(dz_nz[i]+ dz_nz[i-1])**2 - dt *(2* beta[i])/(dz_nz[i]**2+ dz_nz[i-1]**2) 
-          upper_ET[i] = dt *(2* beta[i])/(dz_nz[i]**2+ dz_nz[i-1]**2) * (dz_nz[i]- dz_nz[i-1])/(dz_nz[i]+ dz_nz[i-1])
      for i in range(0,nz-2): #k-1
           lower_AT[i] =  dt *(beta[i+2] - beta[i])/(dz_nz[i+1]+ dz_nz[i])**2  - dt *(2* beta[i+1])/(dz_nz[i+1]**2+ dz_nz[i]**2)
-          lower_ET[i] = - dt *(2* beta[i+1])/(dz_nz[i+1]**2+ dz_nz[i]**2) *  (dz_nz[i+1]- dz_nz[i])/(dz_nz[i+1]+ dz_nz[i])
-
      main_AT[0] =  1
      upper_AT[0] = 0
      main_AT[-1] = 1
      lower_AT[-1] = 0
+# Set up tridiagonal Matrix AT and solve for new T  
+     AT = np.diag(np.ones(nz)*main_AT,k=0) +np.diag(np.ones(nz-1)*lower_AT,k=-1) +\
+     np.diag(np.ones(nz-1)*upper_AT,k=1)    
+# Elements of matrix ET
+     if Eterms:     
+          for i in range(1,nz-1): #k+1
+               upper_ET[i] = dt *(2* beta[i])/(dz_nz[i]**2+ dz_nz[i-1]**2) * (dz_nz[i]- dz_nz[i-1])/(dz_nz[i]+ dz_nz[i-1])
+          for i in range(0,nz-2): #k-1
+               lower_ET[i] = - dt *(2* beta[i+1])/(dz_nz[i+1]**2+ dz_nz[i]**2) *  (dz_nz[i+1]- dz_nz[i])/(dz_nz[i+1]+ dz_nz[i])
+     else:
+          pass
      upper_ET[0] = 0
      lower_ET[-1] = 0
-
-### Set up tridiagonal Matrix AT and solve for new T  
-     AT = np.diag(np.ones(nz)*main_AT,k=0) +np.diag(np.ones(nz-1)*lower_AT,k=-1) +\
-     np.diag(np.ones(nz-1)*upper_AT,k=1)
 ### Set up Error matrix ET
      ET = np.diag(np.ones(nz-1)*lower_ET,k=-1) + np.diag(np.ones(nz-1)*upper_ET,k=1)    
 

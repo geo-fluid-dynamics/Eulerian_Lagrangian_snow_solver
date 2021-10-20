@@ -43,44 +43,42 @@ def solve_for_c(T, T_prev, phi, D_eff, rho_v_dT, nz, dt, dz, Eterms):
     part2 = np.zeros(nz)
    
 # Variables
-   # beta_nonweighted = D_eff*rho_v_dT
     beta = D_eff*rho_v_dT
     a = (1-phi) *rho_v_dT/dt
 # Set up matrix Ac
     dz_nz = np.zeros(nz)
     dz_nz[:-1]= dz[:]
     dz_nz[-1] = (dz[-1] - dz[-2])/2 + dz[-1]
-    
-    #beta weighted
-    # beta[0] = beta_nonweighted[0] 
-    # beta[-1] = beta_nonweighted[-1] 
-
-    # beta[1:-1] = (beta_nonweighted[1:-1] * dz_nz[1:-1] + beta_nonweighted[:-2] * dz_nz[:-2])/ ( dz_nz[1:-1] + dz_nz[:-2]) # beta_nonweighted * dz_nz
-    # constant beta
-    # beta[:50] = k_i *0.5
-    # beta[50:] = k_i *0.4
 ## Elements of matrix Ac (LHS) 
     main_Ac [1:-1] = a[1:-1]+2*2 * beta[1:-1]/(dz_nz[1:-1]**2+dz_nz[:-2]**2)
-
     for i in range(1,nz-1): #k+1
         upper_Ac [i] = - ((beta[i+1]- beta[i-1]))/(dz_nz[i]+ dz_nz[i-1])**2 - (2* beta[i])/(dz_nz[i]**2+ dz_nz[i-1]**2) 
-        upper_Ec [i] = (2* beta[i])/(dz_nz[i]**2+ dz_nz[i-1]**2) * (dz_nz[i]- dz_nz[i-1])/(dz_nz[i]+ dz_nz[i-1])
     for i in range(0,nz-2): #k-1
         lower_Ac[i] =  (beta[i+2] - beta[i])/(dz_nz[i+1]+ dz_nz[i])**2 - (2* beta[i+1])/(dz_nz[i+1]**2+ dz_nz[i]**2) 
-        lower_Ec[i] =  - (2* beta[i+1])/(dz_nz[i+1]**2+ dz_nz[i]**2) * (dz_nz[i+1]- dz_nz[i])/(dz_nz[i+1]+ dz_nz[i])
-
     main_Ac[0] =  a[0]
     upper_Ac[0] = 0
     main_Ac[-1] = a[-1]
     lower_Ac[-1] = 0
-    upper_Ec[0] = 0
-    lower_Ec[-1] = 0
-### Set up tridiagonal Matrix Ac and solve for new c
+
+### Set up tridiagonal Matrix Ac 
     Ac = np.diag(np.ones(nz)*main_Ac,k=0) +np.diag(np.ones(nz-1)*lower_Ac,k=-1) +\
     np.diag(np.ones(nz-1)*upper_Ac,k=1)
+
+# Elements of matrix Ec
+    if Eterms:
+        for i in range(1,nz-1): #k+1
+            upper_Ec [i] = (2* beta[i])/(dz_nz[i]**2+ dz_nz[i-1]**2) * (dz_nz[i]- dz_nz[i-1])/(dz_nz[i]+ dz_nz[i-1])
+        for i in range(0,nz-2): #k-1
+            lower_Ec[i] =  - (2* beta[i+1])/(dz_nz[i+1]**2+ dz_nz[i]**2) * (dz_nz[i+1]- dz_nz[i])/(dz_nz[i+1]+ dz_nz[i])
+    else:
+        pass
+    upper_Ec[0] = 0
+    lower_Ec[-1] = 0
+
+### Set up Matrix Ec
     Ec = np.diag(np.ones(nz-1)*lower_Ec,k=-1) + np.diag(np.ones(nz-1)*upper_Ec,k=1)
-# Set up matrix G
- #Matrix elements
+
+# Set up matrix Bc
     main_Bc = -a
     Bc = np.diag(np.ones(nz)*(main_Bc),k=0) 
 

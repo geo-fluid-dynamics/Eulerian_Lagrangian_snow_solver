@@ -194,9 +194,9 @@ def set_initial_conditions(nz, Z, RHO_ini, T_ini):
         rho_eff[nz1:nz2] = 300
         rho_eff[nz2:] = 400
         rho_eff[:2] = 917
-    elif RHO_ini == 'testcase_thin_layer':
+    elif RHO_ini == 'testcase_thin_layers':
         if nz <10:
-            raise ValueError ('for testcase_thin_layer 10 nodes are required at minimum ')
+            raise ValueError ('for testcase_thin_layers 10 nodes are required at minimum ')
         rho_eff = np.ones(nz)
         x1 = 0.02/0.5
         x2 = 0.1025/0.5
@@ -229,7 +229,31 @@ def set_initial_conditions(nz, Z, RHO_ini, T_ini):
         rho_eff[nz8:nz9] = 130
         rho_eff[nz9:] = 100
 
+    elif RHO_ini == 'testcase_thin_layer':
+        if nz != 101:
+            raise ValueError ('for testcase_thin_layers 100 nodes are required ')
+        rho_eff = np.ones(nz)
+        x1 = 0.02/0.5
+        x2 = 0.25/0.5
+        x3 = 0.48/0.5
+        x4 = 0.5/0.5
+        nz1 = int(x1 * nz)
+        nz2 = int(x2 * nz)
+        nz3 = int(x3 * nz)
+        nz4 = int(x4 * nz)
+        rho_eff[:nz1] = 200
+        rho_eff[nz1] = 200- 16.7 
+        rho_eff[nz1+1] = 200 - 2*16.7
+        rho_eff[nz1+1:nz2-1] = 150
 
+        rho_eff[nz2 - 1] = 150-18.75
+        rho_eff[nz2] = 150- 2* 18.75
+        rho_eff[nz2 + 1] = 150 - 3* 18.75
+
+        rho_eff[nz2+1:nz3-2] = 75
+        rho_eff[nz3-2] = 75-8.3
+        rho_eff[nz3-1] = 75 - 2* 8.3
+        rho_eff[nz3:nz4] = 50
     else:
         raise ValueError("Input initial snow density profile")
     return T, rho_eff

@@ -6,7 +6,7 @@ email: "simson@mbd.rwth-aachen.de"
 date: "21/10/2021"
 ---
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5588308.svg)](https://doi.org/10.5281/zenodo.5588308)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5588308.svg)](https://doi.org/10.5281/zenodo.5588308) [![fair-software.eu](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B%20%20%E2%97%8F%20%20%E2%97%8B-orange)](https://fair-software.eu)
 
 # Readme Vers 1.1
 ### Code corresponds to the model introduced in the paper: *Elements of future snowpack modeling - part 2: A modular and extendable Eulerian-Lagrangian numerical scheme for coupling transport, phase changes and mechanics*

@@ -2,15 +2,15 @@
 title: "Readme"
 author: "Anna Simson"
 location: "RWTH Aachen Germany"
-email: "simson@aices.rwth-aachen.de"
+email: "simson@mbd.rwth-aachen.de"
 date: "21/10/2021"
 output: html_document
 ---
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5588308.svg)](https://doi.org/10.5281/zenodo.5588308)
 # Readme Vers 1.1
 ### Code corresponds to the model introduced in the paper: *Elements of future snowpack modeling - part 2: A modular and extendable Eulerian-Lagrangian numerical scheme for coupling transport, phase changes and mechanics*
 *This readme is directed to the readers of the paper mentioned above. It is  is meant to be used to reproduce the results.*
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5588308.svg)](https://doi.org/10.5281/zenodo.5588308)
+
 
 ## The project
 We developed a Eulerian-Lagrangian computational scheme to model the snowpack's coupled transport, phase change and mechanics. Our approach is modular, so that single processes can be *activated* and *deactivated*. This is useful to evaluate the potential superposition and interdependence of all processes. The modularity is realized by splitting the process equations into diffusion (heat and water vapor transport) and advection (mechanical settling) dominated processes.

@@ -4,9 +4,10 @@ author: "Anna Simson"
 location: "RWTH Aachen Germany"
 email: "simson@mbd.rwth-aachen.de"
 date: "21/10/2021"
-output: html_document
 ---
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5588308.svg)](https://doi.org/10.5281/zenodo.5588308)
+
 # Readme Vers 1.1
 ### Code corresponds to the model introduced in the paper: *Elements of future snowpack modeling - part 2: A modular and extendable Eulerian-Lagrangian numerical scheme for coupling transport, phase changes and mechanics*
 *This readme is directed to the readers of the paper mentioned above. It is  is meant to be used to reproduce the results.*

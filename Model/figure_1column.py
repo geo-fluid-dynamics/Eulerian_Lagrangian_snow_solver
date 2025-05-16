@@ -1,4 +1,4 @@
-figsize_1c = ((7/2.54),6/2.54)
+figsize_1c = ((7 / 2.54), 6 / 2.54)
 linewidth_1c = 1.5
 labelpad_1c = 1
 fontsize_1c = 10

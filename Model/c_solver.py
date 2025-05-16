@@ -4,7 +4,7 @@ import numpy as np
 def solve_for_c(T, T_prev, phi, D_eff, rho_v_dT, nz, dt, dz, Eterms):
     """
     Computes deposition rate c [kgm-3s-1]
-    c = d/dz(D_eff * rho_v_dT dT/dz) - (1-phi) *rho_v_dT * dT/dt 
+    c = d/dz(D_eff * rho_v_dT dT/dz) - (1-phi) *rho_v_dT * dT/dt
 
     Hrguments
     -----------------------------------

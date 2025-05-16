@@ -5,14 +5,14 @@ from model.constant_variables import Z_field, Z_lab
 
 def set_up_model_geometry(geom="FieldScale0.5m"):
     """
-    Set-up model geometry 
+    Set-up model geometry
     Arguments
     ------------------------------
         geom    Flag for geometry of choice
 
     Results
     ---------------------------
-        nz    number of nodes 
+        nz    number of nodes
         Z     total Snow Height  [m]
         dz    node distance cell size [m]
         coord snow height coordinates [m]
@@ -29,10 +29,10 @@ def set_up_model_geometry(geom="FieldScale0.5m"):
 
 def choose_geometry(geom):
     """
-    Select  geometry of the test cases at initiation 
+    Select  geometry of the test cases at initiation
     Arguments
     ----------------------------
-        geom    'FieldScale0.5m' - 101 nodes or 251, 
+        geom    'FieldScale0.5m' - 101 nodes or 251,
                 'LabScale0.02m' - represents the lab scale,
                 layer_based0.5m_2Layer' - 3 computational nodes to reflect layer-based schemes
 

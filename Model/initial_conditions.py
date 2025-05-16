@@ -20,10 +20,10 @@ def set_initial_conditions(nz, Z, RHO_ini, T_ini):
                 'RHO_2Layer_layer_based' mimicks layer based scheme
                 'RHO_2Layer' two layers with distinct snow density and sharp transition between them
                 'RHO_2Layer_inverted' two layers with distinct snow density and sharp transition between them
-                'RHO_3Layer_Arctic' three layers based on arctic snowpack 
-    
+                'RHO_3Layer_Arctic' three layers based on arctic snowpack
+
     Returns
-    -------- 
+    --------
         T       initial temperature profile
         rho_eff initial snow density profile
 

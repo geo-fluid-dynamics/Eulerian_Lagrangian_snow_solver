@@ -25,7 +25,7 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
         z           mesh coordinates of computational nodes in the snowpack [m]
         phi         ice volume fraction [-]
         SetVel      settling active: 'Y'; settling inactive: 'N'
-    
+
     Returns
     --------------
         v           settling velocity for each computational node in the snowpack
@@ -89,8 +89,8 @@ def settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity):
 
 def choose_viscosity(T, phi, viscosity, dz, nz):
     """
-        computes snow viscosity for snow based on a viscosity method (see Readme)
-        """
+    computes snow viscosity for snow based on a viscosity method (see Readme)
+    """
     T_const = 263
     phi_const = 0.1125
     eta = np.zeros_like(T)
@@ -150,13 +150,13 @@ def choose_viscosity(T, phi, viscosity, dz, nz):
         sigma = np.zeros(nz)
         sigma_Dz = np.zeros(nz)
         sigma_Dz[:-1] = g * phi[:-1] * rho_i * dz[:]
-        sigma_Dz[
-            -1
-        ] = 0  #  no stress at heighest node, interface with atmosphere, no overburdened snow mass
+        sigma_Dz[-1] = (
+            0  #  no stress at heighest node, interface with atmosphere, no overburdened snow mass
+        )
         sigma = np.cumsum(sigma_Dz[::-1])  # cumulative sum of stress from top to bottom
         sigma = sigma[::-1]  # sigma reversed -> local stress at each computational node
         sigma_intermed = np.max(sigma)
-        eta1 = 1 / D_rate_literature * sigma_intermed ** 3
+        eta1 = 1 / D_rate_literature * sigma_intermed**3
         eta = eta1 * restrict
     else:
         raise ValueError("Option for viscosity computation not available")
@@ -165,8 +165,8 @@ def choose_viscosity(T, phi, viscosity, dz, nz):
 
 def sigma_cont_croc(dz, phi, nz, v_opt):
     """
-        computes vertical stress from overburdened snowmass
-        """
+    computes vertical stress from overburdened snowmass
+    """
     sigma = np.zeros(nz)
     sigma_Dz = np.zeros(nz)
     sigma_Dz[:-1] = g * phi[:-1] * rho_i * dz[:]
@@ -180,9 +180,9 @@ def sigma_cont_croc(dz, phi, nz, v_opt):
         sigma[-1] = sigma_Dz[-1]
     else:
         # velocity computed based on our approach ('continuous approach')
-        sigma_Dz[
-            -1
-        ] = 0  #  no stress at heighest node, interface with atmosphere, no overburdened snow mass
+        sigma_Dz[-1] = (
+            0  #  no stress at heighest node, interface with atmosphere, no overburdened snow mass
+        )
         sigma = np.cumsum(sigma_Dz[::-1])  # cumulative sum of stress from top to bottom
         sigma = sigma[::-1]  # sigma reversed -> local stress at each computational node
 
@@ -196,8 +196,8 @@ def sigma_cont_croc(dz, phi, nz, v_opt):
 
 def velocity(sigma, eta, dz, nz, viscosity):
     """
-        computes velocity 
-        """
+    computes velocity
+    """
     if viscosity == "eta_constant_n3":
         n = 3
     else:
@@ -211,9 +211,9 @@ def velocity(sigma, eta, dz, nz, viscosity):
     v_dz = (
         D_rate.copy()
     )  # save strain rate with D_rate[0] not 0 to ensure that the ice volume of the lowest node can still grow in update_phi routine
-    D_rate[
-        0
-    ] = 0  # strain rate at lowest node = 0, intersection with the ground no strain
+    D_rate[0] = (
+        0  # strain rate at lowest node = 0, intersection with the ground no strain
+    )
     v[0] = D_rate[0] * dz[0]  # local velocity at the lowest node v=0 [ms-1]
     v[1:] = np.cumsum(
         D_rate[1:] * dz[:]

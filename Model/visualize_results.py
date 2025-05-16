@@ -71,7 +71,7 @@ def plot_results(
     all_c = all_c * 3600 * 24  # deposition rate [kgm-3s-1] to [kgm-3d-1]
     all_dz = all_dz * 100  # node distance [m] to [cm]
 
-    #%% Temperature plot
+    # %% Temperature plot
     fig11 = plt.figure(figsize=(figsize_1c))
     spec11 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig11)
     f11_ax1 = fig11.add_subplot(spec11[0, 0])
@@ -126,7 +126,7 @@ def plot_results(
         dpi=300,
     )
 
-    #%% Deposition Rate plot
+    # %% Deposition Rate plot
     fig12 = plt.figure(figsize=(figsize_1c))
     spec12 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig12)
     f12_ax2 = fig12.add_subplot(spec12[0, 0])
@@ -183,7 +183,7 @@ def plot_results(
         dpi=300,
     )
 
-    #%% Ice volume fraction
+    # %% Ice volume fraction
     fig13 = plt.figure(figsize=(figsize_1c))
     spec13 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig13)
     f13_ax3 = fig13.add_subplot(spec13[0, 0])
@@ -241,7 +241,7 @@ def plot_results(
         dpi=300,
     )
 
-    #%% Node distances
+    # %% Node distances
     fig15 = plt.figure(figsize=(figsize_1c))
     spec15 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig15)
     f15_ax5 = fig15.add_subplot(spec15[0, 0])
@@ -297,7 +297,7 @@ def plot_results(
         dpi=300,
     )
 
-    #%% Velocity
+    # %% Velocity
     fig16 = plt.figure(figsize=(figsize_1c))
     spec16 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig16)
     f16_ax6 = fig16.add_subplot(spec16[0, 0])
@@ -356,7 +356,7 @@ def plot_results(
         dpi=300,
     )
 
-    #%% Minimum node distance
+    # %% Minimum node distance
     fig17 = plt.figure(figsize=(figsize_1c))
     spec17 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig17)
     f17_ax7 = fig17.add_subplot(spec17[0, 0])
@@ -392,7 +392,7 @@ def plot_results(
         dpi=300,
     )
 
-    #%% PLOT MESH and HEAT MAP Ice Volume Fraction
+    # %% PLOT MESH and HEAT MAP Ice Volume Fraction
     fig3 = plt.figure(figsize=(figsize_1c))
     spec3 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig3)
     f3_ax1 = fig3.add_subplot(spec3[0, 0])
@@ -455,7 +455,7 @@ def plot_results(
         dpi=300,
     )
 
-    #%% Water vapor density
+    # %% Water vapor density
     all_rho_v = all_rho_v * 1000
     fig18 = plt.figure(figsize=(figsize_1c))
     spec18 = gridspec.GridSpec(ncols=1, nrows=1, figure=fig18)

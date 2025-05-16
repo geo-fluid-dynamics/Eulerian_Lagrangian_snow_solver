@@ -5,30 +5,30 @@ from model.constant_variables import L
 
 def solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz, Eterms):
     """
-     (rhoC_eff+(1-phi)*rho_v_dT * L)* dT/dt = (L* D_eff* rho_v_dT + k-eff)* d^2T/dz^2
-     Solves 1D diffusion equation for heterogeneous media with implicit method 
+    (rhoC_eff+(1-phi)*rho_v_dT * L)* dT/dt = (L* D_eff* rho_v_dT + k-eff)* d^2T/dz^2
+    Solves 1D diffusion equation for heterogeneous media with implicit method
 
-     Arguments
-     ----------
-          T         temperature of previous time step [K] 
-          rho_v     saturation water vapor density   [kgm-3s-1]
-          rho_v_dT  derivative of rho_v w.r.t. T 
-          k_eff     thermal conductivity       [Wm-1K-1]
-          D_eff     effective diffusion coefficient   [m2s-1]
-          rhoC_eff  effective heat capacity       [JK-1m-3] 
-          phi       ice volume fraction   [-]
-          v         settling velocity  [ms-1]
-          nz        number of computational nodes
-          dt        time steps   [s]
-          dz        node distance   [m]
+    Arguments
+    ----------
+         T         temperature of previous time step [K]
+         rho_v     saturation water vapor density   [kgm-3s-1]
+         rho_v_dT  derivative of rho_v w.r.t. T
+         k_eff     thermal conductivity       [Wm-1K-1]
+         D_eff     effective diffusion coefficient   [m2s-1]
+         rhoC_eff  effective heat capacity       [JK-1m-3]
+         phi       ice volume fraction   [-]
+         v         settling velocity  [ms-1]
+         nz        number of computational nodes
+         dt        time steps   [s]
+         dz        node distance   [m]
 
-     Returns
-     ----------
-          T_new     updated temperature [K]
-          a         coefficient required to determine mesh fourier number
-          beta      coefficient required to determine mesh fourier number
+    Returns
+    ----------
+         T_new     updated temperature [K]
+         a         coefficient required to determine mesh fourier number
+         beta      coefficient required to determine mesh fourier number
 
-     """
+    """
     # Initialize variables
     a = np.zeros(nz)
     beta = np.zeros(nz)
@@ -41,7 +41,7 @@ def solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz, Eterms):
     upper_ET = np.zeros(nz - 1)
     lower_ET = np.zeros(nz - 1)
 
-    #%% Matrix AT, ET and BT
+    # %% Matrix AT, ET and BT
     ## Set up Values
     a = rhoC_eff + L * (1 - phi) * rho_v_dT
     beta = k_eff + D_eff * L * rho_v_dT

@@ -34,8 +34,8 @@ from model.constant_variables import (
 
 def update_model_parameters(phi, T, nz, coord, SWVD, form="Calonne"):
     """
-    Computes model effective parameters 
-    
+    Computes model effective parameters
+
     Arguments
     ---------
         phi         ice volume fraction
@@ -56,11 +56,11 @@ def update_model_parameters(phi, T, nz, coord, SWVD, form="Calonne"):
     Parameters
     --------
         k_i         thermal conductivity ice [Wm-1K-1]
-        k_a         thermal conductivity air [Wm-1K-1]    
+        k_a         thermal conductivity air [Wm-1K-1]
         D0          diffusion coefficient of water vapor in air
         ka0,ka1,ka2 Parameters to compute k_eff
         C_a         heat capacity air [JK-1]
-        C_i         heat capacity ice [JK-1]  
+        C_i         heat capacity ice [JK-1]
         D_eff       effective diffusion coefficient [s2m-1]
         k_eff       thermal conductivity [Wm-1K-1]
     """
@@ -119,31 +119,29 @@ def sat_vap_dens(nz, T, SWVD, plot=False):
         )  # [kg/m^3] Water vapor density
         rho_v_dT = (
             np.exp(-T_ref_L / T)
-            / (f * T ** 2)
+            / (f * T**2)
             * (
-                (a0 - a1 * 273 + a2 * 273 ** 2) * (T_ref_L / T - 1)
+                (a0 - a1 * 273 + a2 * 273**2) * (T_ref_L / T - 1)
                 + (a1 - a2 * 2 * 273) * T_ref_L
-                + a2 * T ** 2 * (T_ref_L / T + 1)
+                + a2 * T**2 * (T_ref_L / T + 1)
             )
         )  # [kg/m^3/K]
     elif SWVD == "Calonne":
         x = (L_Cal * mH2O) / (rho_i * kB)
         rho_v = rho_ref * np.exp(x * ((1 / T_ref_C) - (1 / T)))
 
-        rho_v_dT = x / T ** 2 * rho_ref * np.exp(x * ((1 / T_ref_C) - (1 / T)))
+        rho_v_dT = x / T**2 * rho_ref * np.exp(x * ((1 / T_ref_C) - (1 / T)))
 
     elif SWVD == "Hansen":
 
         rho_v = (
-            (10.0 ** (c1 / T + c2 * np.log(T) / np.log(10) + c3 * T + c4 * T ** 2 + c5))
+            (10.0 ** (c1 / T + c2 * np.log(T) / np.log(10) + c3 * T + c4 * T**2 + c5))
             * c6
             / R_v
             / T
         )
         rho_v_dT = (
-            rho_v
-            * np.log(10)
-            * (-c1 / T ** 2 + c2 / (T * np.log(10)) + c3 + 2 * c4 * T)
+            rho_v * np.log(10) * (-c1 / T**2 + c2 / (T * np.log(10)) + c3 + 2 * c4 * T)
             - rho_v / T
         )
     else:

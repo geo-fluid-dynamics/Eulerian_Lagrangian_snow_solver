@@ -85,7 +85,7 @@ def store_results(
     Arguments
     -----------
         storage matrices and values computed in of this times step
- 
+
     Returns
     ------------
         matrices filled with respective values for the current time step

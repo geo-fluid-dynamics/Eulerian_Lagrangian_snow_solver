@@ -34,7 +34,7 @@ def t_total(t_passed, dt):
 
 def comp_dt(t_passed, dz, a, beta, v):
     """
-    calculates the time step for the next iteration based on mesh fourier number with coefficients a and b from 
+    calculates the time step for the next iteration based on mesh fourier number with coefficients a and b from
     temperature equation and computes the stability criterion based on the mesh fourier number.
     Arguments:
     ----------------
@@ -53,7 +53,7 @@ def comp_dt(t_passed, dz, a, beta, v):
     FN = np.zeros(nz)
     dz_min = np.min(dz)
     dt_CFL = 0.99 * dz / (-1 * v[1:])
-    dt_MF = 0.4999 * a[1:] / beta[1:] * dz ** 2
+    dt_MF = 0.4999 * a[1:] / beta[1:] * dz**2
     dt_min_MF = np.min(dt_MF)
     dt = dt_min_MF
     # dt_min_CFL = np.min(dt_CFL)

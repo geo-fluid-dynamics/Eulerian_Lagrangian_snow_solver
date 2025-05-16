@@ -421,10 +421,7 @@ def plot_results(
     f3_ax1.set_xticks(tick_loc)
     f3_ax1.set_xticklabels(labels)
     f3_ax1.grid()
-    mappable3 = cm.ScalarMappable(cmap="viridis")
-    mappable3.set_array(all_phi)
-    mappable3.set_clim(np.amin(all_phi), np.amax(all_phi))
-    cbar3 = fig3.colorbar(mappable3, format=(ticker.FormatStrFormatter("%0.2f")))
+    cbar3 = fig3.colorbar(cs, ax=f3_ax1, format=(ticker.FormatStrFormatter("%0.2f")))
     cbar3.set_label(
         "Ice volume fraction [-]", fontsize=fontsize_1c, labelpad=labelpad_1c
     )

@@ -16,5 +16,5 @@ def retrieve_phi_from_rho_eff(nz, rho_eff):
         phi         ice volume fraction [-]
     """
     phi = np.zeros(nz)
-    phi = np.true_divide((rho_eff - rho_a), (rho_i - rho_a))
+    phi = np.true_divide(rho_eff, rho_i)
     return phi

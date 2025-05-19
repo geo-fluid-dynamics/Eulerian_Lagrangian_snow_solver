@@ -211,11 +211,8 @@ def velocity(sigma, eta, dz, nz, viscosity):
     v_dz = (
         D_rate.copy()
     )  # save strain rate with D_rate[0] not 0 to ensure that the ice volume of the lowest node can still grow in update_phi routine
-    D_rate[0] = (
-        0  # strain rate at lowest node = 0, intersection with the ground no strain
-    )
-    v[0] = D_rate[0] * dz[0]  # local velocity at the lowest node v=0 [ms-1]
+    v[0] = 0  # local velocity at the lowest node v=0 [ms-1]
     v[1:] = np.cumsum(
-        D_rate[1:] * dz[:]
+        D_rate[:-1] * dz[:]
     )  # Integrate deformation rates [s-1] in space to derive velocity [ms-1]
     return v, v_dz

@@ -1,4 +1,4 @@
-from model.model_geometry import set_up_model_geometry
+from Eulerian_Lagrangian_snow_solver.model.geometry import set_up_model_geometry
 from model.set_time import set_up_iter, t_total, comp_dt
 from model.initial_conditions import set_initial_conditions
 from model.model_parameters import update_model_parameters

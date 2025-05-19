@@ -1,7 +1,5 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from model import *
-import time
 
 
 def main(
@@ -53,7 +51,7 @@ def main(
     FN = np.zeros(nz)
     c = np.zeros(nz)
     [D_eff, k_eff, rhoC_eff, rho_v, rho_v_dT] = update_model_parameters(
-        phi, T, nz, coord, SWVD
+        phi, T, nz, SWVD
     )
     [v, v_dz, sigma] = settling_vel(T, nz, coord, phi, SetVel, v_opt, viscosity)
     for t in range(iter_max):
@@ -118,7 +116,7 @@ def main(
             T, c, dt, nz, phi, v_dz, coord, SetVel, v_opt, viscosity
         )
         [D_eff, k_eff, rhoC_eff, rho_v, rho_v_dT] = update_model_parameters(
-            phi, T, nz, coord, SWVD
+            phi, T, nz, SWVD
         )
         t_passed = t_total(t_passed, dt)
         print(t_passed)

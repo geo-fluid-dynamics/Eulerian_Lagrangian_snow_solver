@@ -1,4 +1,4 @@
-def seboundary_conditions(T):
+def set_boundary_conditions(T):
     """
     Set dirichlet boundary conditions for the temperature equation
 

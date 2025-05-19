@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from model.constant_variables import (
+from model.constants import (
     D0,
     k_i,
     k_a,
@@ -32,7 +32,7 @@ from model.constant_variables import (
 )
 
 
-def update_model_parameters(phi, T, nz, coord, SWVD, form="Calonne"):
+def update_model_parameters(phi, T, nz, SWVD, form="Calonne"):
     """
     Computes model effective parameters
 

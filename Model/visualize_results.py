@@ -2,13 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker as ticker
-import matplotlib.cm as cm
-from matplotlib.ticker import AutoMinorLocator
 from matplotlib import rcParams
 
 rcParams.update({"figure.autolayout": True})
 
-from model.constants import rho_i
 from model.figure_1column import (
     figsize_1c,
     linewidth_1c,

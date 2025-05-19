@@ -1,8 +1,8 @@
 import numpy as np
 
-from model.constant_variables import rho_i
+from model.constants import rho_i
 from model.velocity import settling_vel
-from model.model_geometry import node_distance
+from model.geometry import node_distance
 
 
 def coupled_update_phi_coord(T, c, dt, nz, phi, v_dz, coord, SetVel, v_opt, viscosity):

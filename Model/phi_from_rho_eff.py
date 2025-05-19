@@ -1,5 +1,5 @@
 import numpy as np
-from model.constant_variables import rho_i, rho_a
+from model.constants import rho_i, rho_a
 
 
 def retrieve_phi_from_rho_eff(nz, rho_eff):

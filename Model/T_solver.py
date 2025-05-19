@@ -1,6 +1,6 @@
 import numpy as np
 from model.boundary_conditions import set_boundary_conditions
-from model.constant_variables import L
+from model.constants import L
 
 
 def solve_for_T(T, rho_v_dT, k_eff, D_eff, rhoC_eff, phi, nz, dt, dz, Eterms):

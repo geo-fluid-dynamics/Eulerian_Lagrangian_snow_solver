@@ -8,7 +8,7 @@ from matplotlib import rcParams
 
 rcParams.update({"figure.autolayout": True})
 
-from model.constant_variables import rho_i
+from model.constants import rho_i
 from model.figure_1column import (
     figsize_1c,
     linewidth_1c,

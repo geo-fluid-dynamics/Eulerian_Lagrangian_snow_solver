@@ -1,6 +1,6 @@
 import numpy as np
-from model.model_geometry import node_distance
-from model.constant_variables import (
+from model.geometry import node_distance
+from model.constants import (
     D_rate_literature,
     a_eta,
     b_eta,

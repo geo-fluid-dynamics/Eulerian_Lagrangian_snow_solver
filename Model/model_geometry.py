@@ -1,6 +1,6 @@
 import numpy as np
 
-from model.constant_variables import Z_field, Z_lab
+from model.constant_variables import Z_lab
 
 
 def set_up_model_geometry(geom="FieldScale0.5m"):

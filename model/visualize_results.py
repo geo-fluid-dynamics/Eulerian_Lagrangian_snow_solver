@@ -361,7 +361,7 @@ def plot_results(
     f17_ax7.plot(all_t_passed, minimumdz, "k-", linewidth=linewidth_1c)
     f17_ax7.set_xlabel("Time [h]", fontsize=fontsize_1c, labelpad=labelpad_1c)
     f17_ax7.set_ylabel(
-        "Minimum node distance ($\Delta z$) [cm]",
+        "Minimum node distance ($\\Delta z$) [cm]",
         fontsize=fontsize_1c,
         labelpad=labelpad_1c,
     )
